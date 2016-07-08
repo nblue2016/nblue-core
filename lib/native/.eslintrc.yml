@@ -1,0 +1,6 @@
+---
+  rules:
+    id-length: 0
+    no-extend-native: 0
+    no-eval: [0, { allowIndirect: true }]
+    no-magic-numbers: 0

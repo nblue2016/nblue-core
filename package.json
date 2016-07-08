@@ -1,0 +1,52 @@
+{
+  "name": "nblue",
+  "description": "The core runtime for nblue framework",
+  "homepage": "http://www.nblue.net",
+  "version": "0.0.46",
+  "author": {
+    "name": "Bruce Jiang",
+    "email": "bruce1977@live.com"
+  },
+  "keywords": [
+    "nblue",
+    "betch",
+    "native extend",
+    "runtime",
+    "async query"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nblue2016/nblue.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "dependencies": {
+    "co": "^4.6.0",
+    "js-yaml": "^3.6.1",
+    "node-fetch": "^1.5.3"
+  },
+  "devDependencies": {
+    "eslint": "^2.10.2",
+    "mocha": "^2.3.4"
+  },
+  "directories": {},
+  "files": [
+    "lib",
+    "readme.md"
+  ],
+  "_npmUser": {
+    "name": "nblue2016",
+    "email": "nblue2016@163.com"
+  },
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "mocha ./test/start",
+    "test-betch": "node ./test/betch/test"
+  },
+  "bugs": {
+    "url": "https://github.com/nblue2016/nblue/issues/new",
+    "email": "nblue2016@163.com"
+  }
+}

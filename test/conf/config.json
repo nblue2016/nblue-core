@@ -1,0 +1,23 @@
+{
+    "$$version":"1.0.1",
+    "name": "test file",
+    "databases": {
+        "dbtest": "connection string for test",
+        "dbsys": "connection string for system"
+    },
+    "settings": {
+        "#env": "development",
+        "port": 8088,
+        "supportHttps": false,
+        "supportMiddleware": true,
+        "useSubFolder": false,
+        "recordSteps": false
+    },
+    "logger": {
+        "output": "stdout",
+        "error": "stderr"
+    },
+    "middlewares": [
+        "../rest/security/middleware"
+    ]
+}

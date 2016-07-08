@@ -1,0 +1,5 @@
+---
+  rules:
+    consistent-this: 0
+    no-eval: 0
+    no-unused-vars: 0
