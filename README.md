@@ -1,6 +1,6 @@
 # nblue
 ## Introduction
-nblue is core module for nblue services, it supports more useful class in server side. This module was written by ES6, so it must run more than node v6.0.
+nblue is core module for nblue services, it supports more useful class in server side. This module was written by ES6, so it'd better run more than node v6.0.
 
 ## Installation:
 You can use npm to install nblue

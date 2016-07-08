@@ -12,6 +12,8 @@ const baseUrl = `http://127.0.0.1:${port}`
 const scriptFile = `${__dirname}/demo.js`
 const scriptFile2 = `${__dirname}/demo2.js`
 const scriptFile3 = `${__dirname}/demo3.js`
+const scriptFile4 = `${__dirname}/demo4.js`
+const scriptFile5 = `${__dirname}/demo5.js`
 const errorScriptFile = `${__dirname}/demo_error.js`
 
 
@@ -283,8 +285,6 @@ describe('betch', () => {
           ['r0', 'r1', 'r2', 'r3', 'e1', 'r4'], 'same keys')
         assert.deepEqual(errorKeys, ['r0', 'e1'], 'same keys')
 
-        done()
-
         options = {
           $ignoreError: true,
           $fullReturn: false
@@ -294,13 +294,50 @@ describe('betch', () => {
           run(scriptFile3, options)
       }).
       then((data) => {
-        assert.equal(data, null, 'checked')
+        assert.equal(data, 5, 'checked result when $fullReturn is false.')
 
-        done()
+        options = {
+          $ignoreError: false
+        }
+
+        return aq.
+          run(scriptFile3, options).
+          then(() => done(new Error('Should not get result'))).
+          catch((err) => {
+            assert.equal(err.message, 'the first error', 'check error')
+
+            done()
+          })
       }).
       catch((err) => {
         done(err)
       })
+  })
+
+  it('run script with cache feature', function (done) {
+    this.timeout(5000)
+
+    aq.
+      run(scriptFile4).
+      then((data) => {
+        assert.equal(data, 'val1', 'get value from cache')
+
+        setTimeout(() => {
+          aq.
+            run(scriptFile5).
+            then((data2) => {
+              assert.equal(
+                data2,
+                null,
+                'get value from cache when it was expired'
+              )
+
+              done()
+            }).
+            catch((err) => done(err))
+        }, 1050)
+      }).
+      catch((err) => done(err))
   })
 
   after(() => server.stop())

@@ -1,5 +1,5 @@
 script({
-  r0: aq.then(null, new Error('test')),
+  r0: aq.then(null, new Error('the first error')),
   r1: rest(`${config().urlOfService1}?key1=val1&key2=val2`),
   r2: (ctx, data) => betch([
     aq.then(1),
