@@ -2,7 +2,7 @@
   "name": "nblue",
   "description": "The core runtime for nblue framework",
   "homepage": "http://www.nblue.net",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Bruce Jiang",
     "email": "bruce1977@live.com"

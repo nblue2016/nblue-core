@@ -1,5 +1,5 @@
 const assert = require('assert')
-const StringBuilder = require('../lib').StringBuilder
+const StringBuilder = require('../../lib').StringBuilder
 
 describe('string builder', () => {
   it('test append method', () => {
