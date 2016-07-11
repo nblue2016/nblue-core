@@ -101,9 +101,11 @@ describe('global', () => {
   })
 
   it('test date method of format', () => {
-    const d1 = Date.parseDate('2016/02/05 14:33:12')
+    const d1 = new Date(2016, 1, 5, 14, 33, 12)
+      // Date.parseDate('2016/02/05 14:33:12')
     const d2 = '2016/02/05 14:33:12'.toDate()
-    const d3 = Date.parseDate('2016/02/05 9:3:1')
+    const d3 = new Date(2016, 1, 5, 9, 3, 1)
+      // Date.parseDate('2016/02/05 9:3:1')
     const d4 = '2016/05/24 9:3:1'.toDate()
     const d5 = '2015/11/24 9:3:1'.toDate()
 
@@ -147,6 +149,42 @@ describe('global', () => {
       "date.format('MMM') should equal 'Nov'")
     assert.equal(d5.format('MMMM', { supportName: true }), 'November',
       "date.format('MMMM') should equal 'November'")
+  })
+
+  it('test date.addDays', () => {
+    // const date1 = Date.parseDate('2016/04/29')
+    // const date3 = Date.parseDate('2016/04/29')
+    const date1 = new Date(2016, 3, 29, 0, 0, 0)
+    const date2 = new Date(2016, 4, 29, 0, 0, 0)
+    const date3 = new Date(2016, 5, 28, 0, 0, 0)
+    const date1b = Date.parseDate('2016/04/29')
+    const date2b = Date.parseDate('2016/05/29')
+    const date3b = Date.parseDate('2016/06/28')
+
+
+    assert.deepEqual(date2, date1.addDays(30), 'add 30 days')
+    assert.deepEqual(date2b, date1b.addDays(30), 'add 30 days b')
+
+    assert.deepEqual(date3, date2.addDays(30), 'add 30 days 2')
+    assert.deepEqual(date3b, date2b.addDays(30), 'add 30 days b2')
+  })
+
+  it('test date.addMonths', () => {
+    // const date1 = Date.parseDate('2016/04/29')
+    // const date3 = Date.parseDate('2016/04/29')
+    const date1 = new Date(2016, 3, 29, 0, 0, 0)
+    const date2 = new Date(2018, 9, 29, 0, 0, 0)
+    const date3 = new Date(2023, 9, 29, 0, 0, 0)
+    const date1b = Date.parseDate('2016/04/29')
+    const date2b = Date.parseDate('2018/10/29')
+    const date3b = Date.parseDate('2023/10/29')
+
+
+    assert.deepEqual(date2, date1.addMonths(30), 'add 30 months')
+    assert.deepEqual(date2b, date1b.addMonths(30), 'add 30 months b')
+
+    assert.deepEqual(date3, date2.addMonths(60), 'add 60 months 2')
+    assert.deepEqual(date3b, date2b.addMonths(60), 'add 60 months b2')
   })
 
   it('test static method of Object.values', () => {

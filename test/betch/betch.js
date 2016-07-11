@@ -14,6 +14,7 @@ const scriptFile2 = `${__dirname}/demo2.js`
 const scriptFile3 = `${__dirname}/demo3.js`
 const scriptFile4 = `${__dirname}/demo4.js`
 const scriptFile5 = `${__dirname}/demo5.js`
+const scriptFile6 = `${__dirname}/demo6.js`
 const errorScriptFile = `${__dirname}/demo_error.js`
 
 
@@ -314,9 +315,7 @@ describe('betch', () => {
       })
   })
 
-  it('run script with cache feature', function (done) {
-    this.timeout(5000)
-
+  it('run script with cache feature', (done) => {
     aq.
       run(scriptFile4).
       then((data) => {
@@ -336,6 +335,18 @@ describe('betch', () => {
             }).
             catch((err) => done(err))
         }, 1050)
+      }).
+      catch((err) => done(err))
+  })
+
+  it('run script with cache handle', (done) => {
+    aq.
+      run(scriptFile6).
+      then((data) => aq.run(scriptFile6)).
+      then((data) => {
+        assert.deepEqual({ key1: 'val1' }, data, 'equal')
+
+        done()
       }).
       catch((err) => done(err))
   })
