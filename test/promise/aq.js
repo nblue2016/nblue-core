@@ -95,45 +95,39 @@ describe('aq', () => {
   })
 
   it('call method', (done) => {
-    fs.readFile(
-      testFile,
-      { encoding: 'utf-8' },
-      (err, data) => {
-        if (err) {
-          done(err)
+    fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
+      if (err) {
+        done(err)
 
-          return
-        }
+        return
+      }
 
-        aq.
+      aq.
           call(fs, fs.readFile, testFile, { encoding: 'utf-8' }).
           then((aqData) => {
             assert.equal(aqData, data, 'read file by call methods failed.')
             done()
           }).
           catch((aqErr) => done(aqErr))
-      })
+    })
   })
 
   it('apply method', (done) => {
-    fs.readFile(
-      testFile,
-      { encoding: 'utf-8' },
-      (err, data) => {
-        if (err) {
-          done(err)
+    fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
+      if (err) {
+        done(err)
 
-          return
-        }
+        return
+      }
 
-        aq.
-          apply(fs, fs.readFile, [testFile, { encoding: 'utf-8' }]).
-          then((aqData) => {
-            assert.equal(aqData, data, 'read file by call methods failed.')
-            done()
-          }).
-          catch((aqErr) => done(aqErr))
-      })
+      aq.
+        apply(fs, fs.readFile, [testFile, { encoding: 'utf-8' }]).
+        then((aqData) => {
+          assert.equal(aqData, data, 'read file by call methods failed.')
+          done()
+        }).
+        catch((aqErr) => done(aqErr))
+    })
   })
 
   it('stat file method', (done) => {
@@ -149,24 +143,21 @@ describe('aq', () => {
   })
 
   it('read file method', (done) => {
-    fs.readFile(
-      testFile,
-      { encoding: 'utf-8' },
-      (err, data) => {
-        if (err) {
-          done(err)
+    fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
+      if (err) {
+        done(err)
 
-          return
-        }
+        return
+      }
 
-        aq.
-          readFile(testFile, { encoding: 'utf-8' }).
-          then((aqData) => {
-            assert.equal(aqData, data, 'invoke aq.readfile methods failed.')
-            done()
-          }).
-          catch((aqErr) => done(aqErr))
-      })
+      aq.
+        readFile(testFile, { encoding: 'utf-8' }).
+        then((aqData) => {
+          assert.equal(aqData, data, 'invoke aq.readfile methods failed.')
+          done()
+        }).
+        catch((aqErr) => done(aqErr))
+    })
   })
 
   it('series method', (done) => {

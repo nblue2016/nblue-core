@@ -9,6 +9,4 @@ npm install nblue
 ```
 
 ## 使用：
-- [ConfigMap](https://github.com/nblue2016/nblue/blob/master/doc/ConfigMapCN.md)
-- [Logger](https://github.com/nblue2016/nblue/blob/master/doc/LoggerCN.md)
-- [aq](https://github.com/nblue2016/nblue/blob/master/doc/aqCN.md)
+...

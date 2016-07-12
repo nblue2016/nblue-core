@@ -9,11 +9,87 @@ npm install nblue
 ```
 
 ## Usage
-- [aq](https://github.com/nblue2016/nblue/blob/master/doc/aq.md)
+
+### betch
+Betch is core module of nblue, it can be easy to apply list of promises one by one or merge their result by array. betch was created base on co, but it add more complex features, for more details you can read  [this document](https://github.com/nblue2016/nblue/blob/master/doc/betch.md)
+``` javascript
+const betch = require('nblue').betch
+
+// use an object to execute promises one by one
+betch({
+  r1: Promise.resolve(1),
+  r2: (ctx, data) => Promise.resolve(data + 2),
+  r3: (ctx, data) => data + 3
+}).
+then((data) => {
+  console.log(data) // data should be 6
+})
+
+// or use array to execute promises with parallel mode
+betch([
+  Promise.resolve(1),
+  Promise.resolve(2),
+  Promise.resolve(3)
+]).
+then((data) => {
+  console.log(data) // data should be [1, 2, 3]
+})
+```
+
+### aq
+aq is a class, it can package a value or function to return a Promise. You can see following example to learn its main usage, for more details, please see the [document](https://github.com/nblue2016/nblue/blob/master/doc/aq.md) by link
+
+``` javascript
+const aq = require('nblue').aq
+
+// promise a value
+aq.
+  then('test').
+  then((data) => {
+    console.log(data) // data is test
+  })
+
+// read an file
+const testFile = path.join(__dirname, 'test.dat')
+
+aq.
+  readFile(testFile, { encoding: 'utf-8' }).
+  then((data) => {
+    console.log(data) // output file content
+  })
+
+// invoke rest method
+aq.
+  rest("http://127.0.0.1:8080/?key1=val1&key2=val2").
+  then((data) => {
+    console.log(data) // output the response body by web api
+  }).
+  catch((err) => {
+    console.log(err) // output error message
+  })
+
+```
+
+### native object extends
+nblue extends some methods for native object
+
+Append finally and done method for Promise
+``` javascript
+```
+
+StringBuilder class
+
+Add some methods for date object
+
+### ConfigMap and Logger
+
+
+For more details, you can find these by following link
 - [betch](https://github.com/nblue2016/nblue/blob/master/doc/betch.md)
-- [Native extend](https://github.com/nblue2016/nblue/blob/master/doc/native.md)
-- [ConfigMap](https://github.com/nblue2016/nblue/blob/master/doc/configmap.md)
-- [Logger](https://github.com/nblue2016/nblue/blob/master/doc/logger.md)
+- [aq](https://github.com/nblue2016/nblue/blob/master/doc/aq.md)
+- [native extend](https://github.com/nblue2016/nblue/blob/master/doc/native.md)
+- [configmap](https://github.com/nblue2016/nblue/blob/master/doc/configmap.md)
+- [logger](https://github.com/nblue2016/nblue/blob/master/doc/logger.md)
 
 ## License
 
