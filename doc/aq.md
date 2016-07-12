@@ -1,9 +1,9 @@
 ## aq
-The aq object inherits from co, it includes all features in co and wrap request. You can use it easy to call rest service in server side
+The aq is a class inherits from co, it includes all features in co and wrap some usefully feature to return a Promise. You can use it easy to read a file or call an web api. This module uses co and node-fetch moudles by following link
 - https://github.com/tj/co
-- https://github.com/request/request
+- https://github.com/bitinn/node-fetch
 
-aq.then() method, package a value or error to a Promise
+**then()**, packages a value or error to a Promise
 ``` javascript
 const aq = require('nblue').aq
 
@@ -21,7 +21,7 @@ aq.
 
 ```
 
-aq.apply() method, call a function and get a Promise, the parameter is an array
+**apply()**, invoke a function and return a Promise, the parameters for called function is an array.
 
 ``` javascript
 const filename = 'data.txt'
@@ -36,7 +36,7 @@ aq.
   })
 ```
 
-aq.call() method, call a function and get a Promise, the parameter is following the function
+**aq.call()**, invoke a function and return a Promise, the parameters for called function is one by one to follow function name
 
 ``` javascript
 const filename = 'data.txt'
@@ -52,7 +52,7 @@ aq.
 ```
 
 
-aq.rest() method, call a rest service and get a Promise. Below code show how to get data from rest service with GET mothed.
+**aq.rest()**, call a rest service and return a Promise. Below code show how to get data from rest service with GET mothed.
 
 ``` javascript
 const aq = require('nblue').aq
@@ -62,12 +62,8 @@ aq.
   then((data) => {
     console.log(data)  // output {"key1":"data1", "key2":"data2"}
   })
-```
 
-aq.rest() method also support to call complex rest services, the post data and result of rest service must use JSON format
-
-``` javascript
-const aq = require('nblue').aq
+// aq.rest() method also support to call complex rest services, the post data and result of rest service must use JSON format
 
 const headers = {"token": "xcvsd23sfs23423"}
 const body = {"a1":1, "a2":2}
@@ -79,7 +75,7 @@ aq.
   })
 ```
 
-aq.parallel() method, can execute many Promise at the same time and get an array result
+**aq.parallel()**, can execute many Promise at the same time and return result within an array.
 
 ``` javascript
 const aq = require('nblue').aq
@@ -93,25 +89,20 @@ aq.
   then((data) => {
     console.log(data)  // [1, 2, 3]
   })
-```
 
-We can complex aq.rest and aq.parallel to batch process a few rest service.
-
-``` javascript
-const aq = require('nblue').aq
-
+// We can complex aq.rest and aq.parallel to batch process a few rest service.
 aq.
   parallel([
     aq.rest('http://127.0.0.1:8000?key1=data1&key2=data2'),
     aq.rest('http://127.0.0.1:8000?key3=data3&key4=data4')
   ]).
   then((data) => {
-    // [{"key1":"data1", "key2":"data2"}, {"key3":"data3", "key4":"data4"}]
+    // output [{"key1":"data1", "key2":"data2"}, {"key3":"data3", "key4":"data4"}]
     console.log(data)
   })
 ```
 
-aq.series() method, execute a few Promise one by one and get the result for the latest one
+**aq.series()**, execute a few Promises one by one and return the result of the latest one
 ``` javascript
 const aq = require('nblue').aq
 
@@ -126,7 +117,7 @@ aq.
   })
 ```
 
-aq.readFile() method, read a file and return a Promise
+**aq.readFile()**, read a file and return a Promise
 ``` javascript
 const aq = require('nblue').aq
 const filename = 'data.txt'

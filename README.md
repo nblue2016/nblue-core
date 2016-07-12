@@ -11,7 +11,7 @@ npm install nblue
 ## Usage
 
 ### betch
-Betch is core module of nblue, it can be easy to apply list of promises one by one or merge their result by array. betch was created base on co, but it add more complex features, for more details you can read  [this document](https://github.com/nblue2016/nblue/blob/master/doc/betch.md)
+**betch** is core module of nblue, it can be easy to apply list of promises one by one or merge their result by array. Also, the betch can apply a predefined script with arguments. betch was created base on co, but it add more complex features, for more details you can read  [this document](https://github.com/nblue2016/nblue/blob/master/doc/betch.md)
 ``` javascript
 const betch = require('nblue').betch
 
@@ -37,7 +37,7 @@ then((data) => {
 ```
 
 ### aq
-aq is a class, it can package a value or function to return a Promise. You can see following example to learn its main usage, for more details, please see the [document](https://github.com/nblue2016/nblue/blob/master/doc/aq.md) by link
+**aq** is a static class, it can package a value or function to return a Promise. You can see following example to learn main usage about it, for more details, please see the [document](https://github.com/nblue2016/nblue/blob/master/doc/aq.md) by link
 
 ``` javascript
 const aq = require('nblue').aq
@@ -50,10 +50,11 @@ aq.
   })
 
 // read an file
-const testFile = path.join(__dirname, 'test.dat')
+const path = require('path')
+const file = path.join(__dirname, 'test.dat')
 
 aq.
-  readFile(testFile, { encoding: 'utf-8' }).
+  readFile(file, { encoding: 'utf-8' }).
   then((data) => {
     console.log(data) // output file content
   })
@@ -75,6 +76,7 @@ nblue extends some methods for native object
 
 Append finally and done method for Promise
 ``` javascript
+
 ```
 
 StringBuilder class
