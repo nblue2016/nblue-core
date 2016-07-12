@@ -8,6 +8,12 @@ You can use npm to install nblue
 npm install nblue
 ```
 
+Run test cases with mocha
+```
+npm install mocha
+npm test
+```
+
 ## Usage
 
 ### betch

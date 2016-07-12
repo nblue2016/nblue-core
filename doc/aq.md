@@ -24,6 +24,7 @@ aq.
 **apply()**, invoke a function and return a Promise, the parameters for called function is an array.
 
 ``` javascript
+const aq = require('nblue').aq
 const filename = 'data.txt'
 
 aq.
@@ -39,6 +40,7 @@ aq.
 **aq.call()**, invoke a function and return a Promise, the parameters for called function is one by one to follow function name
 
 ``` javascript
+const aq = require('nblue').aq
 const filename = 'data.txt'
 
 aq.
