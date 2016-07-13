@@ -1,6 +1,6 @@
 # nblue
 ## Introduction
-nblue is core module for nblue services, it supports more useful class in server side. This module was written by ES6, so it'd better run more than node v6.0.
+nblue is core module for nblue framework, it includes more useful class and module. The full package was written by ES6, so it'd better run more than node v6.0.
 
 ## Installation:
 You can use npm to install nblue
@@ -43,7 +43,7 @@ then((data) => {
 ```
 
 ### aq
-**aq** is a static class, it can package a value or function to return a Promise. You can see following example to learn main usage about it, for more details, please see the [document](https://github.com/nblue2016/nblue/blob/master/doc/aq.md) by link
+**aq** is a static class, it can package a value or function to return a ES6 Promise. You can see following example to learn main usage about it, for more details, please see the [document](https://github.com/nblue2016/nblue/blob/master/doc/aq.md) by link
 
 ``` javascript
 const aq = require('nblue').aq

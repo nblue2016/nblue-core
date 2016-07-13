@@ -2,7 +2,7 @@
   "name": "nblue",
   "description": "The core runtime for nblue framework",
   "homepage": "http://www.nblue.net",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "Bruce Jiang",
     "email": "bruce1977@live.com"
@@ -24,8 +24,7 @@
   },
   "dependencies": {
     "co": "^4.6.0",
-    "js-yaml": "^3.6.1",
-    "node-fetch": "^1.5.3"
+    "js-yaml": "^3.6.1"
   },
   "devDependencies": {
     "eslint": "^2.10.2",

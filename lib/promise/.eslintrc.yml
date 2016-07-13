@@ -1,0 +1,4 @@
+---
+  rules:
+    # disable some rules for test
+    no-magic-numbers: 0

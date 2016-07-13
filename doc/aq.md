@@ -1,29 +1,40 @@
 ## aq
-The aq is a class inherits from co, it includes all features in co and wrap some usefully feature to return a Promise. You can use it easy to read a file or call an web api. This module uses co and node-fetch moudles by following link
+The aq is a class inherits from co, it includes all features in co and wrap some usefully functions to return a ES6 Promise. You can use it easy to read a file or call an web api. This module uses co and node-fetch moudles by following link
 - https://github.com/tj/co
-- https://github.com/bitinn/node-fetch
 
 **then()**, packages a value or error to a Promise
+
+code:
 ``` javascript
 const aq = require('nblue').aq
 
+// package a value
 aq.
   then(1).
   then((data) => {
     console.log(data) // output 1
   })
 
+// package an error
 aq.
   then(null, new Error('an error')).
   catch((err) => {
     console.log(err.message)  // output 'an error'
   })
 
+// or use done() method
+aq.
+  done(new Error('an error')).
+  catch((err) => {
+    console.log(err.message)  // output 'an error'
+  })
 ```
 
 **apply()**, invoke a function and return a Promise, the parameters for called function is an array.
 
+code:
 ``` javascript
+const fs = require('fs')
 const aq = require('nblue').aq
 const filename = 'data.txt'
 
@@ -39,7 +50,9 @@ aq.
 
 **aq.call()**, invoke a function and return a Promise, the parameters for called function is one by one to follow function name
 
+code:
 ``` javascript
+const fs = require('fs')
 const aq = require('nblue').aq
 const filename = 'data.txt'
 
@@ -54,13 +67,21 @@ aq.
 ```
 
 
-**aq.rest()**, call a rest service and return a Promise. Below code show how to get data from rest service with GET mothed.
+**aq.rest()**, call a rest service and return a Promise. Below code show how to get data from rest service with GET mothed. Before using rest method, you need install a fetch-http module like node-fetch or request.
 
+for example:
+```
+npm install node-fetch
+or
+npm install request
+```
+
+code:
 ``` javascript
 const aq = require('nblue').aq
 
 aq.
-  rest('http://127.0.0.1:8000?key1=data1&key2=data2')
+  rest('http://127.0.0.1:8080/data/test.json').
   then((data) => {
     console.log(data)  // output {"key1":"data1", "key2":"data2"}
   })
@@ -71,7 +92,7 @@ const headers = {"token": "xcvsd23sfs23423"}
 const body = {"a1":1, "a2":2}
 
 aq.
-  rest('http://127.0.0.1:8000?key1=data1&key2=data2', 'POST', headers, body).
+  rest('http://127.0.0.1:8080/data/test2.json', 'POST', headers, body).
   then((data) => {
     console.log(data)  // output result
   })
@@ -79,6 +100,7 @@ aq.
 
 **aq.parallel()**, can execute many Promise at the same time and return result within an array.
 
+code:
 ``` javascript
 const aq = require('nblue').aq
 
@@ -105,6 +127,8 @@ aq.
 ```
 
 **aq.series()**, execute a few Promises one by one and return the result of the latest one
+
+code:
 ``` javascript
 const aq = require('nblue').aq
 
@@ -120,6 +144,8 @@ aq.
 ```
 
 **aq.readFile()**, read a file and return a Promise
+
+code:
 ``` javascript
 const aq = require('nblue').aq
 const filename = 'data.txt'
