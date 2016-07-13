@@ -11,9 +11,6 @@ const server = new Server(port)
 
 const testFile = path.join(__dirname, 'test.dat')
 
-// aq.fetchModule = 'request'
-console.log(aq.fetchModule)
-
 describe('aq', () => {
   before(() => server.start())
 

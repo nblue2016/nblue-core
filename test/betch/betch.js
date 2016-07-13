@@ -68,11 +68,11 @@ describe('betch', () => {
       r1: 1,
       r2: Promise.resolve(2),
       r3: Promise.resolve(3),
-      r4: {
-        rr1: betch([
+      r4$: {
+        rr1$: [
           Promise.resolve(4),
           Promise.resolve(5)
-        ]),
+        ],
         rr2: (ctx) => Promise.resolve(ctx.r2 + ctx.r3),
         rr3: (ctx) => rest(`${baseUrl}?key1=val1&key3=val3`)
       }
@@ -82,8 +82,8 @@ describe('betch', () => {
       r1: 1,
       r2: 2,
       r3: 3,
-      r4: {
-        rr1: [4, 5],
+      r4$: {
+        rr1$: [4, 5],
         rr2: 5,
         rr3: {
           key1: 'val1',
@@ -95,7 +95,7 @@ describe('betch', () => {
     aq.
       betch(source, {}).
       then((data) => {
-        assert.deepEqual(data, target.r4, 'test that full return is true')
+        assert.deepEqual(data, target.r4$, 'test that full return is true')
 
         return betch(source, { $fullReturn: true })
       }).
