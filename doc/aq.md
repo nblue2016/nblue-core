@@ -48,6 +48,25 @@ aq.
   })
 ```
 
+**callback()**, use a callback function to receive Promise.
+
+code:
+``` javascript
+const aq = require('nblue').aq
+
+aq.callback(
+  Promise.resolve(1),
+  (err, data) => {
+    if (err) {
+      // process error
+      // ...
+    }
+
+    console.log(data) // it should be 1
+  }
+)
+```
+
 **aq.call()**, invoke a function and return a Promise, the parameters for called function is one by one to follow function name
 
 code:

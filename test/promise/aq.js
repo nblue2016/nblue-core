@@ -65,6 +65,27 @@ describe('aq', () => {
     return fn(6)
   })
 
+  it('callback', (done) => {
+    aq.callback(
+      Promise.resolve(1),
+      (err, data) => {
+        if (err) done(err)
+        else {
+          assert.equal(data, 1, 'get data')
+
+          aq.callback(
+            Promise.reject(1),
+            (err2, data2) => {
+              if (err2) done()
+              else {
+                done(new Error('do catched error'))
+              }
+            }
+          )
+        }
+      })
+  })
+
   it('wrap function(then)', (done) => {
     const fnWrap =
       aq.wrap(function *(val) {
@@ -263,7 +284,7 @@ describe('aq', () => {
           strictMode: true
         }
       ).
-      then((data) => done(new Error('shoud be json with error node.'))).
+      then((data) => done()).
       catch((err) => {
         done(err.status === 200 ? null : err)
       })
