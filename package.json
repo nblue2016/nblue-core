@@ -1,8 +1,8 @@
 {
   "name": "nblue",
   "description": "The core runtime for nblue framework",
-  "homepage": "http://www.nblue.net",
-  "version": "0.0.10",
+  "homepage": "https://github.com/nblue2016/",
+  "version": "0.0.11",
   "author": {
     "name": "Bruce Jiang",
     "email": "bruce1977@live.com"
@@ -41,7 +41,7 @@
   },
   "main": "./lib/index.js",
   "scripts": {
-    "test": "mocha ./test/start",
+    "test": "mocha ./test/start --no-warnings",
     "test-betch": "node ./test/betch/test"
   },
   "bugs": {

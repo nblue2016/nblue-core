@@ -17,7 +17,6 @@ const scriptFile5 = `${__dirname}/demo5.js`
 const scriptFile6 = `${__dirname}/demo6.js`
 const errorScriptFile = `${__dirname}/demo_error.js`
 
-
 describe('betch', () => {
   before(() => server.start())
 
@@ -263,15 +262,20 @@ describe('betch', () => {
       then(() => done(new Error('uncatched dir'))).
       catch(() => aq.run(errorScriptFile, {})).
       then(() => done(new Error('uncatched invalid file data'))).
-      catch(() => done())
+      catch(() => {
+        done()
+      })
   })
 
-  it('run complex script', (done) => {
+  it('run complex script', function (done) {
+    this.timeout(2000)
+
     core.Betch.config = {
       urlOfService1: baseUrl
     }
 
     let options = {
+      $catchError: false,
       $ignoreError: true,
       $fullReturn: true
     }
@@ -279,36 +283,41 @@ describe('betch', () => {
     aq.
       run(scriptFile3, options).
       then((data) => {
-        const keys = Object.keys(data)
-        const errorKeys = Object.keys(options.$errors)
+        const keys = data ? Object.keys(data) : []
+        const errorKeys = options && options.$errors
+          ? Object.keys(options.$errors)
+          : []
 
         assert.deepEqual(keys,
-          ['r0', 'r1', 'r2', 'r3', 'e1', 'r4'], 'same keys')
+          ['r0', 'r1', 'r2', 'e1', 'r3', 'r4'], 'same keys')
         assert.deepEqual(errorKeys, ['r0', 'e1'], 'same keys')
 
+        return Promise.resolve(0)
+      }).
+      then(() => {
         options = {
+          $catchError: false,
           $ignoreError: true,
           $fullReturn: false
         }
 
-        return aq.
-          run(scriptFile3, options)
+        return aq.run(scriptFile3, options)
       }).
       then((data) => {
         assert.equal(data, 5, 'checked result when $fullReturn is false.')
 
         options = {
+          $catchError: true,
           $ignoreError: false
         }
 
-        return aq.
-          run(scriptFile3, options).
-          then(() => done(new Error('Should not get result'))).
-          catch((err) => {
-            assert.equal(err.message, 'the first error', 'check error')
+        return aq.run(scriptFile3, options).
+            then(() => done(new Error('Should not get result'))).
+            catch((err) => {
+              assert.equal(err.message, 'the first error', 'check error')
 
-            done()
-          })
+              done()
+            })
       }).
       catch((err) => {
         done(err)
@@ -351,5 +360,9 @@ describe('betch', () => {
       catch((err) => done(err))
   })
 
-  after(() => server.stop())
+  after(() => {
+    if (server) {
+      setTimeout(() => server.stop(), 100)
+    }
+  })
 })

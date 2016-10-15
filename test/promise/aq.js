@@ -181,6 +181,25 @@ describe('aq', () => {
     })
   })
 
+  it('read lines method', (done) => {
+    aq.
+      readLines(testFile, { encoding: 'utf-8' }).
+      then((aqData) => {
+        assert.equal(aqData.length, 5, 'can\'')
+        assert.equal(
+          aqData[0],
+          'ttt',
+          'read the 1st line failed.')
+        assert.equal(
+          aqData[aqData.length - 1],
+          'W#497u3823423df',
+          'read the latest line failed.')
+        // assert.equal(aqData, data, 'invoke aq.readfile methods failed.')
+        done()
+      }).
+      catch((aqErr) => done(aqErr))
+  })
+
   it('series method', (done) => {
     const q1 = [aq.then(2), aq.then(4), aq.then(6)]
 

@@ -1,8 +1,31 @@
 require('../')
 
-const qs = require('querystring')
-const aq = global.aq
+// const qs = require('querystring')
+// const aq = global.aq
+const betch = global.betch
+const options = {
+  $catchError: true,
+  $ignoreError: true,
+  $fullReturn: true
+}
 
+betch({
+  r0: Promise.reject(1),
+  r1: Promise.reject(2),
+  r2: Promise.reject(3),
+  r3: Promise.resolve(4)
+}, options).
+then((data) => {
+  console.log(data)
+  console.log('## ok')
+}).
+catch((err) => {
+  console.log('## failed')
+  console.log(err)
+})
+
+
+/*
 const helloUrl = 'https://hdc.uat.mkiapp.com/client/hello'
 const loginUrl = 'https://hdc.uat.mkiapp.com/client/login?sessionId=%s'
 
@@ -92,3 +115,4 @@ aq.
       if (err.source) console.log(err.source)
     }
   })
+*/
