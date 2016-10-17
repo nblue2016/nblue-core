@@ -30,6 +30,18 @@ describe('betch', () => {
       then((data) => {
         assert.deepEqual(data, [1, 2, 3], 'test simply parallel with array')
 
+        return betch([
+          rest(`${baseUrl}?key1=val1`),
+          rest(`${baseUrl}?key2=val2`),
+          rest(`${baseUrl}?key3=val3`)
+        ])
+      }).
+      then((data) => {
+        assert.equal(data.length, 3, 'get 3 elements from result')
+        assert.deepEqual(data[0], { key1: 'val1' }, 'verified the 1st element')
+        assert.deepEqual(data[1], { key2: 'val2' }, 'verified the 2nd element')
+        assert.deepEqual(data[2], { key3: 'val3' }, 'verified the 3rd element')
+
         done()
       }).
       catch((err) => done(err))
