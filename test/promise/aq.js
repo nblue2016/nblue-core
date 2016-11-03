@@ -11,16 +11,14 @@ const server = new Server(port)
 
 const testFile = path.join(__dirname, 'test.dat')
 
-describe('aq', () => {
-  before(() => server.start())
-
+describe('aq - methods', () => {
   it('wrap value', (done) => {
     aq.
       then(1).
       then((data) => {
         assert.equal(data, 1, 'test')
-        done()
       }).
+      then(() => done()).
       catch((err) => done(err))
   })
 
@@ -87,16 +85,16 @@ describe('aq', () => {
   })
 
   it('wrap function(then)', (done) => {
-    const fnWrap =
+    const wrapFunc =
       aq.wrap(function *(val) {
         return yield aq.then(val)
       })
 
-    fnWrap(true).
+    wrapFunc(true).
       then((data) => {
-        assert.equal(data, true, 'test faield for wrap')
-        done()
+        assert.equal(data, true, 'check result')
       }).
+      then(() => done()).
       catch((err) => done(err))
   })
 
@@ -109,95 +107,113 @@ describe('aq', () => {
       return yield [aq1, aq2, aq3]
     }).
     then((data) => {
-      assert.deepEqual(data, [1, 2, 3], 'test failed for co')
-      done()
+      assert.deepEqual(data, [1, 2, 3], 'check result')
     }).
+    then(() => done()).
     catch((err) => done(err))
+  })
+
+  it('back method', (done) => {
+    fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
+      if (err) return done(err)
+
+      return aq.
+        back((cb) => fs.readFile(testFile, { encoding: 'utf-8' }, cb)).
+        then((fd) => {
+          assert.equal(fd, data, 'check result.')
+        }).
+        then(() => done()).
+        catch((err2) => done(err2))
+    })
   })
 
   it('call method', (done) => {
     fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
-      if (err) {
-        done(err)
+      if (err) return done(err)
 
-        return
-      }
-
-      aq.
-          call(fs, fs.readFile, testFile, { encoding: 'utf-8' }).
-          then((aqData) => {
-            assert.equal(aqData, data, 'read file by call methods failed.')
-            done()
-          }).
-          catch((aqErr) => done(aqErr))
+      return aq.
+        call(fs, fs.readFile, testFile, { encoding: 'utf-8' }).
+        then((aqData) => {
+          assert.equal(aqData, data, 'check result.')
+        }).
+        then(() => done()).
+        catch((err2) => done(err2))
     })
   })
 
   it('apply method', (done) => {
     fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
-      if (err) {
-        done(err)
+      if (err) return done(err)
 
-        return
-      }
-
-      aq.
+      return aq.
         apply(fs, fs.readFile, [testFile, { encoding: 'utf-8' }]).
         then((aqData) => {
-          assert.equal(aqData, data, 'read file by call methods failed.')
-          done()
+          assert.equal(aqData, data, 'check result.')
         }).
+        then(() => done()).
         catch((aqErr) => done(aqErr))
     })
   })
 
   it('stat file method', (done) => {
-    aq.statFile(testFile).
+    aq.
+      statFile(testFile).
       then(() => done()).
       catch((err) => done(err))
   })
 
   it('sate invalid file method', (done) => {
-    aq.statFile(`${testFile}2`).
+    aq.
+      statFile(`${testFile}2`).
       then(() => done(new Error('unknown'))).
       catch(() => done())
   })
 
   it('read file method', (done) => {
     fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
-      if (err) {
-        done(err)
+      if (err) return done(err)
 
-        return
-      }
-
-      aq.
+      return aq.
         readFile(testFile, { encoding: 'utf-8' }).
         then((aqData) => {
           assert.equal(aqData, data, 'invoke aq.readfile methods failed.')
-          done()
         }).
+        then(() => done()).
         catch((aqErr) => done(aqErr))
     })
   })
 
   it('read lines method', (done) => {
+    const lines = [
+      'ttt',
+      'bbb',
+      'ccc',
+      '33 dd 234',
+      'W#497u3823423df'
+    ]
+
+    const options = { encoding: 'utf-8' }
+
     aq.
-      readLines(testFile, { encoding: 'utf-8' }).
-      then((aqData) => {
-        assert.equal(aqData.length, 5, 'can\'')
-        assert.equal(
-          aqData[0],
-          'ttt',
-          'read the 1st line failed.')
-        assert.equal(
-          aqData[aqData.length - 1],
-          'W#497u3823423df',
-          'read the latest line failed.')
-        // assert.equal(aqData, data, 'invoke aq.readfile methods failed.')
-        done()
+      readLines(testFile, options).
+      then((fdata) => {
+        assert.equal(fdata.length, lines.length, 'count of lines')
+        Array.
+          range(0, fdata.length).
+          forEach((index) => {
+            assert.equal(fdata[index], lines[index], '${index} line.')
+          })
+
+        options.ignoreBlank = false
+
+        return aq.readLines(testFile, options)
       }).
-      catch((aqErr) => done(aqErr))
+      then((fdata) => {
+        assert.equal(fdata.length, lines.length + 1, 'count of lines')
+        assert.equal(fdata[3], '', 'blank line')
+      }).
+      then(() => done()).
+      catch((err) => done(err))
   })
 
   it('series method', (done) => {
@@ -210,7 +226,9 @@ describe('aq', () => {
       then((data) => {
         assert.equal(data, 6, 'get result.')
       }).
-      then(() => aq.series(q2.map((item) => ary.push(item * 2)))).
+      then(() => aq.series(
+        q2.map((item) => ary.push(item * 2)))
+      ).
       then(() => {
         assert.deepEqual(
           ary, [2, 4, 6, 8, 10], 'function without result.'
@@ -273,34 +291,38 @@ describe('aq', () => {
       then(() => done()).
       catch((err) => done(err))
   })
+})
+
+describe('aq - rest', () => {
+  before(() => server.start())
 
   it('rest method', (done) => {
     let url = `http://127.0.0.1:${port}/?key1=val1&key2=val2`
 
     aq.
-      rest(url).
-      then((data) => {
-        const result = {
-          key1: 'val1',
-          key2: 'val2'
-        }
+        rest(url).
+        then((data) => {
+          const result = {
+            key1: 'val1',
+            key2: 'val2'
+          }
 
-        assert.deepEqual(data, result, 'Get data from http server error!')
+          assert.deepEqual(data, result, 'Get data from http server error!')
 
-        url = `http://127.0.0.1:${port}/?key1=val1&key3=val3`
+          url = `http://127.0.0.1:${port}/?key1=val1&key3=val3`
 
-        return aq.rest(url)
-      }).
-      then((data) => {
-        const result = {
-          key1: 'val1',
-          key3: 'val3'
-        }
+          return aq.rest(url)
+        }).
+        then((data) => {
+          const result = {
+            key1: 'val1',
+            key3: 'val3'
+          }
 
-        assert.deepEqual(data, result, 'Get data from http server error!')
-        done()
-      }).
-      catch((err) => done(err))
+          assert.deepEqual(data, result, 'Get data from http server error!')
+          done()
+        }).
+        catch((err) => done(err))
   })
 
   it('rest failed (response status: 403)', (done) => {
