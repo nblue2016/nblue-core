@@ -1,80 +1,103 @@
 const assert = require('assert')
-const core = require('../../lib')
+const nblue = require('../../lib')
 
-const aq = core.aq
-const betch = core.betch
+const aq = nblue.aq
+const betch = nblue.betch
 const rest = aq.rest
 
 const Server = require('../../').fake.http
 const port = 1338
 const server = new Server(port)
 const baseUrl = `http://127.0.0.1:${port}`
-const scriptFile = `${__dirname}/demo.js`
-const scriptFile2 = `${__dirname}/demo2.js`
-const scriptFile3 = `${__dirname}/demo3.js`
-const scriptFile4 = `${__dirname}/demo4.js`
-const scriptFile5 = `${__dirname}/demo5.js`
-const scriptFile6 = `${__dirname}/demo6.js`
-const errorScriptFile = `${__dirname}/demo_error.js`
 
-describe('betch', () => {
+describe('betch - value/array/object', () => {
   before(() => server.start())
 
-  it('parallel promise', (done) => {
-    aq.
-      betch([
-        1,
-        Promise.resolve(2),
-        Promise.resolve(3)
-      ]).
-      then((data) => {
-        assert.deepEqual(data, [1, 2, 3], 'test simply parallel with array')
+  it('betch a value', (done) => {
+    const strVal = 'abc'
+    const intVal = 17
 
-        return betch([
-          rest(`${baseUrl}?key1=val1`),
-          rest(`${baseUrl}?key2=val2`),
-          rest(`${baseUrl}?key3=val3`)
-        ])
-      }).
-      then((data) => {
-        assert.equal(data.length, 3, 'get 3 elements from result')
-        assert.deepEqual(data[0], { key1: 'val1' }, 'verified the 1st element')
-        assert.deepEqual(data[1], { key2: 'val2' }, 'verified the 2nd element')
-        assert.deepEqual(data[2], { key3: 'val3' }, 'verified the 3rd element')
-
-        done()
-      }).
+    betch(strVal).
+      then((data) => assert.equal(data, strVal, 'string value')).
+      then(() => betch(intVal)).
+      then((data) => assert.equal(data, intVal, 'integer value')).
+      then(() => done()).
       catch((err) => done(err))
   })
 
-  it('series promise', (done) => {
+  it('betch an array', (done) => {
+    const source = [
+      1,
+      Promise.resolve(2),
+      Promise.resolve(3)
+    ]
+    const target = [1, 2, 3]
+
+    const restSource = [
+      () => rest(`${baseUrl}?key1=val1`),
+      () => rest(`${baseUrl}?key2=val2`),
+      () => rest(`${baseUrl}?key3=val3`)
+    ]
+    const restTarget = [
+      { key1: 'val1' },
+      { key2: 'val2' },
+      { key3: 'val3' }
+    ]
+
+    betch(source).
+      then((data) => assert.deepEqual(data, target, 'simply array')).
+      then(() => betch(restSource)).
+      then((data) => assert.deepEqual(data, restTarget, 'rest functions')).
+      then(() => done()).
+      catch((err) => done(err))
+  })
+
+  it('betch an object', (done) => {
     const source = {
       r1: 1,
       r2: Promise.resolve(2),
       r3: '$Promise.resolve(3)'
     }
 
-    const target = {
+    const target = 3
+    const fullTarget = {
       r1: 1,
       r2: 2,
       r3: 3
     }
 
     betch(source).
-      then((data) => {
-        assert.deepEqual(data, 3, 'test that full return is true')
-
-        return betch(source, { $fullReturn: true })
-      }).
-      then((data) => {
-        assert.deepEqual(data, target, 'test that full return is false')
-
-        done()
-      }).
+      then((data) => assert.equal(data, target, 'the latest return')).
+      then(() => betch(source, { $fullReturn: true })).
+      then((data) => assert.deepEqual(data, fullTarget, 'full return')).
+      then(() => done()).
       catch((err) => done(err))
   })
 
-  it('complex promise', (done) => {
+  it('betch array and object', (done) => {
+    const source = {
+      r1: () => rest(`${baseUrl}?key1=val1`),
+      r2: [
+        () => rest(`${baseUrl}?key1=val1`),
+        () => rest(`${baseUrl}?key2=val2`)
+      ]
+    }
+
+    const target = {
+      r1: { key1: 'val1' },
+      r2: [
+          { key1: 'val1' },
+          { key2: 'val2' }
+      ]
+    }
+
+    betch(source, { $fullReturn: true }).
+      then((data) => assert.deepEqual(data, target, 'test merged rest')).
+      then(() => done()).
+      catch((err) => done(err))
+  })
+
+  it('betch with options', (done) => {
     const source = {
       r1: 1,
       r2: Promise.resolve(2),
@@ -103,272 +126,196 @@ describe('betch', () => {
       }
     }
 
-    aq.
-      betch(source, {}).
-      then((data) => {
-        assert.deepEqual(data, target.r4$, 'test that full return is true')
-
-        return betch(source, { $fullReturn: true })
-      }).
-      then((data) => {
-        assert.deepEqual(data, target, 'test that full return is false')
-
-        done()
-      }).
-      catch((err) => done(err))
-  })
-
-  it('merge rest promise', (done) => {
-    const source = [
-      () => rest(`${baseUrl}?key1=val1&key2=val2`),
-      () => rest(`${baseUrl}?key1=val1&key3=val3`),
-      () => rest(`${baseUrl}?key2=val2&key3=val3`)
-    ]
-    const target = [{
-      key1: 'val1',
-      key2: 'val2'
-    }, {
-      key1: 'val1',
-      key3: 'val3'
-    }, {
-      key2: 'val2',
-      key3: 'val3'
-    }]
-
-    aq.
-      betch(source).
-      then((data) => {
-        assert.deepEqual(data, target, 'test merged rest')
-
-        done()
-      }).
-      catch((err) => done(err))
-  })
-
-  it('string value', (done) => {
-    let testString = 'test'
-
-    aq.
-      betch(testString).
-      then((data) => {
-        assert.deepEqual(data, testString, 'test string value for dir name')
-
-        testString = 'abc'
-
-        return betch(testString)
-      }).
-      then((data) => {
-        assert.deepEqual(
-          data,
-          testString,
-          'test string value that it is not a file or dir name'
-        )
-
-        done()
-      }).
-      catch((err) => done(err))
-  })
-
-  it('run script', (done) => {
-    aq.
-      betch(scriptFile).
-      then((data) => {
-        assert.deepEqual(data, 5, 'test simply script')
-
-        return aq.run(scriptFile, { a1: 20 })
-      }).
-      then((data) => {
-        assert.deepEqual(data, 20, 'test simply script called by run')
-
-        return aq.run(scriptFile, { a1: 10 })
-      }).
-      then((data) => {
-        assert.deepEqual(data, 10, 'test simply script called by run')
-
-        done()
-      }).
-      catch((err) => done(err))
-  })
-
-  it('run script with metas', (done) => {
-    const target = { r1: [6, 'test', 3] }
-
-    aq.
-      betch(scriptFile2).
-      then((data) => {
-        assert.deepEqual(data, target.r1, 'test script without arg')
-
-        return aq.run(scriptFile2, { $args: { a1: 1 } })
-      }).
-      then((data) => {
-        target.r1[0] = 1
-
-        assert.deepEqual(data, target.r1, 'test script with arg')
-
-        return aq.run(
-          scriptFile2, {
-            a1: 1,
-            a2: 'good'
-          })
-      }).
-      then((data) => {
-        target.r1[0] = 1
-        target.r1[1] = 'good'
-
-        assert.deepEqual(data, target.r1, 'change arg has default value')
-
-        // type of a2 is invalid, it should be string.
-        // following code should catch it and return null
-        return aq.run(
-          scriptFile2, {
-            a1: 1,
-            a2: 5
-          }).
-          then(() => Promise.reject(0)).
-          catch(() => null)
-      }).
+    betch(source, {}).
+      then((data) => assert.deepEqual(data, target.r4$, 'the latest return')).
+      then(() => betch(source, { $fullReturn: true })).
+      then((data) => assert.deepEqual(data, target, 'full return')).
       then(() => done()).
       catch((err) => done(err))
   })
 
-  it('workflow promise', (done) => {
+  it('hide value with underscore key', (done) => {
     const source = {
       r1: 2,
       _h1: (ctx, data) => data + 2,
-      r2: (ctx, data) => rest(`${baseUrl}?key1=1&key2=${data}`),
-      r3: (ctx, data) => Promise.resolve(data.key2)
+      r2: (ctx, data) => rest(`${baseUrl}?key=${data}`),
+      r3: (ctx, data) => Promise.resolve(data.key)
     }
 
     const target = {
       r1: 2,
-      r2: {
-        key1: 1,
-        key2: 4
-      },
+      r2: { key: 4 },
       r3: 4
     }
 
-    aq.
-      betch(source).
-      then((data) => {
-        assert.equal(data, target.r3, 'check result')
+    const targetKeys = ['r1', 'r2', 'r3']
 
-        return betch(source, { $fullReturn: true })
-      }).
+    betch(source).
+      then((data) => assert.equal(data, target.r3, 'the latest result')).
+      then(() => betch(source, { $fullReturn: true })).
       then((data) => {
-        assert.equal(data.r1, target.r1, 'check r1 in result')
-        assert.equal(data._h1, null, 'check _h1 in result')
-        assert.deepEqual(data.r2, target.r2, 'check r2 in result')
-        assert.equal(data.r3, target.r3, 'check r3 in result')
+        assert.deepEqual(data, target, 'full result')
 
-        done()
+        return Object.keys(data)
       }).
+      then((data) => assert.deepEqual(data, targetKeys, `hide _ result`)).
+      then(() => done()).
       catch((err) => done(err))
   })
 
-  it('call run method to execute script', (done) => {
-    aq.
-      run('unknown', {}).
-      then(() => done(new Error('uncatched invalid file name'))).
-      catch(() => aq.run('test', {})).
-      then(() => done(new Error('uncatched dir'))).
-      catch(() => aq.run(errorScriptFile, {})).
-      then(() => done(new Error('uncatched invalid file data'))).
-      catch(() => {
-        done()
-      })
+  it('with init data', (done) => {
+    const initData = 4
+    const source = {
+      r1: (ctx, data) => data * 2
+    }
+    const target = initData * 2
+
+    betch(source, {}, initData).
+      then((data) => assert.equal(data, target, 'double value')).
+      then(() => done()).
+      catch((err) => done(err))
   })
 
-  it('run complex script', function (done) {
-    this.timeout(2000)
+  it('check error', (done) => {
+    const errMessage = 'an error'
+    const promiseError = 'a promise error'
 
-    core.Betch.config = {
-      urlOfService1: baseUrl
+    const source = {
+      r1: () => 1,
+      r2: () => {
+        throw new Error(errMessage)
+      },
+      r3: () => 3,
+      r4: () => Promise.reject(new Error(promiseError)),
+      r5: () => 5
     }
 
-    let options = {
-      $catchError: false,
-      $ignoreError: true,
-      $fullReturn: true
+    const target = 5
+    const fullTarget = {
+      r1: 1,
+      r2: null,
+      r3: 3,
+      r4: null,
+      r5: 5
+    }
+
+    betch(source).
+      catch((err) => assert.equal(err.message, errMessage, 'catched error')).
+      then(() =>
+        betch(source, {
+          $throwError: false,
+          $fullReturn: false
+        })).
+      then((data) => assert.equal(data, target, 'the latest return')).
+      then(() =>
+        betch(source, {
+          $throwError: false,
+          $fullReturn: true
+        })).
+      then((data) => assert.deepEqual(data, fullTarget, 'not catch error')).
+      then(() => done()).
+      catch((err) => done(err))
+  })
+
+  it('get errors', (done) => {
+    const errMessage = 'an error'
+    const promiseError = 'a promise error'
+
+    const source = {
+      r1: () => 1,
+      r2: () => {
+        throw new Error(errMessage)
+      },
+      r3: () => 3,
+      r4: () => Promise.reject(new Error(promiseError)),
+      r5: () => 5
+    }
+
+    const target = 5
+    const fullTarget = {
+      r1: 1,
+      r2: null,
+      r3: 3,
+      r4: null,
+      r5: 5
     }
 
     aq.
-      run(scriptFile3, options).
-      then((data) => {
-        const keys = data ? Object.keys(data) : []
-        const errorKeys = options && options.$errors
-          ? Object.keys(options.$errors)
-          : []
+      then(0).
+      then(() => {
+        const ctx = {}
 
-        assert.deepEqual(keys,
-          ['r0', 'r1', 'r2', 'e1', 'r3', 'r4'], 'same keys')
-        assert.deepEqual(errorKeys, ['r0', 'e1'], 'same keys')
+        ctx.$throwError = false
+        ctx.$fullReturn = true
 
-        return Promise.resolve(0)
+        betch(source, ctx).
+          then((data) => {
+            const errs = ctx.$errors
+            const errKeys = Object.keys(errs)
+
+            assert.deepEqual(data, fullTarget, 'full result')
+            assert.deepEqual(errKeys, ['r2', 'r4'], 'all error')
+          })
       }).
       then(() => {
-        options = {
-          $catchError: false,
-          $ignoreError: true,
-          $fullReturn: false
-        }
+        const ctx = {}
 
-        return aq.run(scriptFile3, options)
+        ctx.$throwError = false
+        ctx.$fullReturn = false
+
+        betch(source, ctx).
+          then((data) => {
+            const errs = ctx.$errors
+            const errKeys = Object.keys(errs)
+
+            assert.deepEqual(data, target, 'the latest result')
+            assert.deepEqual(errKeys, ['r2', 'r4'], 'all error too')
+          })
       }).
-      then((data) => {
-        assert.equal(data, 5, 'checked result when $fullReturn is false.')
+      then(() => {
+        const ctx = {}
 
-        options = {
-          $catchError: true,
-          $ignoreError: false
-        }
+        ctx.$throwError = true
+        ctx.$fullReturn = true
 
-        return aq.run(scriptFile3, options).
-            then(() => done(new Error('Should not get result'))).
-            catch((err) => {
-              assert.equal(err.message, 'the first error', 'check error')
+        betch(source, ctx).
+          catch((err) => {
+            const errs = ctx.$errors
+            const errKeys = Object.keys(errs)
 
-              done()
-            })
+            assert.equal(err.message, errMessage, 'catched error')
+            assert.deepEqual(errKeys, ['r2'], 'the 1st error key')
+          })
       }).
-      catch((err) => {
-        done(err)
-      })
-  })
+      then(() => {
+        const ctx = {}
 
-  it('run script with cache feature', (done) => {
-    aq.
-      run(scriptFile4).
-      then((data) => {
-        assert.equal(data, 'val1', 'get value from cache')
+        ctx.$throwError = true
+        ctx.$ignoreError = true
+        ctx.$fullReturn = true
 
-        setTimeout(() => {
-          aq.
-            run(scriptFile5).
-            then((data2) => {
-              assert.equal(
-                data2,
-                null,
-                'get value from cache when it was expired'
-              )
+        betch(source, ctx).
+          catch((err) => {
+            const errs = ctx.$errors
+            const errKeys = Object.keys(errs)
 
-              done()
-            }).
-            catch((err) => done(err))
-        }, 1050)
+            assert.equal(err.message, errMessage, 'catched error too')
+            assert.deepEqual(errKeys, [], 'no error key')
+
+            ctx.$throwError = false
+            ctx.$ignoreError = true
+
+            return betch(source, ctx)
+          }).
+          then((data) => {
+            const errs = ctx.$errors
+            const errKeys = Object.keys(errs)
+
+            assert.deepEqual(data, fullTarget, '')
+            assert.deepEqual(errKeys, [], 'no error key too')
+          })
       }).
-      catch((err) => done(err))
-  })
-
-  it('run script with cache handle', (done) => {
-    aq.
-      run(scriptFile6).
-      then((data) => aq.run(scriptFile6)).
-      then((data) => {
-        assert.deepEqual({ key1: 'val1' }, data, 'equal')
-
-        done()
-      }).
+      then(() => done()).
       catch((err) => done(err))
   })
 

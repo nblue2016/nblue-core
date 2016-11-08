@@ -1,18 +1,24 @@
 const assert = require('assert')
 const path = require('path')
+const nblue = require('../../lib')
 
-const core = require('../../lib')
-const aq = core.aq
-const ConfigMap = core.ConfigMap
+const aq = nblue.aq
+const ConfigMap = nblue.ConfigMap
 
 const cf = new ConfigMap()
 
-describe('conf', () => {
+describe('config', () => {
   it('get/set key-value', () => {
+    const val1 = 1
+    const val2 = 'test string'
+
     // test set key and get key
-    cf.set('key1', 1).set('key2', 'test string')
-    assert.equal(cf.get('key1'), 1, 'get key1')
-    assert.equal(cf.get('key2'), 'test string', 'get key2')
+    cf.
+      set('key1', val1).
+      set('key2', val2)
+
+    assert.equal(cf.get('key1'), val1, 'get key1')
+    assert.equal(cf.get('key2'), val2, 'get key2')
   })
 
   it('toJson function', () => {
@@ -30,56 +36,63 @@ describe('conf', () => {
   })
 
   it('copy function', () => {
-    const m1 = new ConfigMap()
-    const cf3 = new ConfigMap()
+    const cm1 = new ConfigMap()
+    const cm2 = new ConfigMap()
 
-    m1.set('k1', 'v1').set('k2', 'v2')
-    cf3.copy(m1)
+    const key1 = 'k1'
+    const key2 = 'k2'
+    const val1 = 'v1'
+    const val2 = 'v2'
 
-    assert.equal(cf3.get('k1'), 'v1', 'copied k1')
-    assert.equal(cf3.get('k2'), 'v2', 'copied k2')
+    cm1.
+      set(key1, val1).
+      set(key2, val2)
+
+    cm2.copy(cm1)
+
+    assert.equal(cm2.get(key1), val1, 'copied k1')
+    assert.equal(cm2.get(key2), val2, 'copied k2')
   })
 
-  it('check read configuration file', (done) => {
+  it('read configuration file', (done) => {
     // get full file path and parse it for JSON format
     const configJSONFile = path.join(__dirname, 'config.json')
     const configYamlFile = path.join(__dirname, 'config.yml')
 
-    let
-      configFromJSON = null,
-      configFromYaml = null
+    const keyOfName = 'name'
+    const valueOfName = 'test file'
 
     aq.
-      readFile(configJSONFile, { encoding: 'utf-8' }).
+      parallel([
+        aq.readFile(configJSONFile, { encoding: 'utf-8' }),
+        aq.readFile(configYamlFile, { encoding: 'utf-8' })
+      ]).
+      then((data) => [
+        ConfigMap.parseJSON(data[0]),
+        ConfigMap.parseYAML(data[1])
+      ]).
       then((data) => {
-        configFromJSON = ConfigMap.parseJSON(data)
-
-        return aq.readFile(configYamlFile, { encoding: 'utf-8' })
-      }).
-      then((data) => {
-        configFromYaml = ConfigMap.parseYAML(data)
-
-        const configs = [configFromJSON, configFromYaml]
-
-        configs.forEach((config) => {
-          assert.equal(config.get('name'), 'test file', 'get name from config')
+        data.forEach((config) => {
+          assert.equal(
+            config.get(keyOfName), valueOfName, 'get value by name key'
+          )
 
           const databases = config.get('databases')
 
-          if (!databases) throw new assert.AssertionError('get datatabase node')
+          if (!databases) {
+            throw new assert.AssertionError('hasn\'t datatabase node')
+          }
 
-          assert.equal(databases.has('dbtest'), true, 'got dbtest node')
-          assert.equal(databases.has('dbsys'), true, 'got dbsys node')
-          assert.notEqual(
-            databases.has('dbuser'), true, 'doesn\'t got dbuser node')
+          assert.ok(databases.has('dbtest'), 'has dbtest key')
+          assert.ok(databases.has('dbsys'), 'has dbsys key')
+          assert.ok(!databases.has('dbuser'), 'hasn\'t dbuser key')
         })
-
-        done()
       }).
+      then(() => done()).
       catch((err) => done(err))
   })
 
-  it('check parse configuration file', (done) => {
+  it('parse configuration file', (done) => {
     const configFile = path.join(__dirname, 'config.yml')
 
     ConfigMap.
@@ -90,23 +103,17 @@ describe('conf', () => {
           'connection string for test with debug mode',
           'get databases.dbtest from config by callback'
         )
-
-        done()
       }).
+      then(() => done()).
       catch((err) => done(err))
   })
 
-
-  it('check parse configuration file by callback', (done) => {
+  it('parse configuration file by callback', (done) => {
     const configFile = path.join(__dirname, 'config.yml')
 
     ConfigMap.
         parseConfig(configFile, 'debug', (err, data) => {
-          if (err) {
-            done(err)
-
-            return
-          }
+          if (err) return done(err)
 
           assert.equal(
             data.get('databases').get('dbtest'),
@@ -114,42 +121,31 @@ describe('conf', () => {
             'get databases.dbtest from config'
           )
 
-          done()
+          return done()
         })
   })
 
-  it('check parse configuration file sync', (done) => {
+  it('parse configuration file sync', () => {
     const configFile = path.join(__dirname, 'config.yml')
 
-    try {
-      const data = ConfigMap.parseConfigSync(configFile)
+    const data = ConfigMap.parseConfigSync(configFile)
 
-      assert.equal(
-        data.get('databases').get('dbtest'),
-        'connection string for test with debug mode',
-        'get databases.dbtest from config'
-      )
-
-      done()
-    } catch (err) {
-      done(err)
-    }
+    assert.equal(
+      data.get('databases').get('dbtest'),
+      'connection string for test with debug mode',
+      'get databases.dbtest from config'
+    )
   })
 
-  it('check parse invalid configuration file', (done) => {
+  it('parse invalid configuration file', (done) => {
     const configFile = path.join(__dirname, 'error.yml')
 
     ConfigMap.
       parseConfig(configFile).
       then((data) => {
-        if (!data) {
-          // try to prase a configuration file that doesn't exist
-          done()
+        if (!data) return done()
 
-          return
-        }
-
-        done(new Error('get data for by invalid file name.'))
+        return done(new Error('get data for by invalid file name.'))
       }).
       catch((err) => done(err))
   })

@@ -147,7 +147,7 @@
     comma-spacing: 1 # enforce consistent spacing before and after commas
     comma-style: 1 # enforce consistent comma style
     computed-property-spacing: 1 # enforce consistent spacing inside computed property brackets
-    consistent-this: [1, "ctx"]  # enforce consistent naming when capturing the current execution context
+    consistent-this: [1, "that"]  # enforce consistent naming when capturing the current execution context
     eol-last: 1 # enforce at least one newline at the end of files
     func-names: 0 # enforce named function expressions
     func-style: 1 # enforce the consistent use of either function declarations or expressions

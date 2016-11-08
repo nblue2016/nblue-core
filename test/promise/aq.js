@@ -1,13 +1,9 @@
 const assert = require('assert')
 const path = require('path')
 const fs = require('fs')
+const nblue = require('../../lib')
 
-const core = require('../../lib')
-const aq = core.aq
-const Server = core.fake.http
-
-const port = 1338
-const server = new Server(port)
+const aq = nblue.aq
 
 const testFile = path.join(__dirname, 'test.dat')
 
@@ -15,9 +11,7 @@ describe('aq - methods', () => {
   it('wrap value', (done) => {
     aq.
       then(1).
-      then((data) => {
-        assert.equal(data, 1, 'test')
-      }).
+      then((data) => assert.equal(data, 1, 'test')).
       then(() => done()).
       catch((err) => done(err))
   })
@@ -25,23 +19,15 @@ describe('aq - methods', () => {
   it('wrap error', (done) => {
     aq.
       then(null, new Error('test')).
-      then((data) => {
-        throw new Error('failed')
-      }).
-      catch((err) => {
-        try {
-          assert.equal(err.message, 'test', 'catched error')
-          done()
-        } catch (err2) {
-          done(err2)
-        }
-      })
+      then((data) => Promise.reject(new Error('failed'))).
+      catch((err) => assert.equal(err.message, 'test', 'catched error')).
+      then(() => done())
   })
 
-  it('wrap function', () => {
-    const fn = aq.wrap(function *(val) {
-      assert.equal(val, 6, 'invaild val')
+  it('wrap function', (done) => {
+    const result = [1, 2, 3, 4, 5, 6]
 
+    const fn = aq.wrap(function *(val) {
       const ary = []
 
       if (val >= 0) {
@@ -52,36 +38,16 @@ describe('aq - methods', () => {
         }
       }
 
-      assert.deepEqual(
-        ary,
-        [1, 2, 3, 4, 5, 6],
-        'Invaild length of return array.')
-
       return ary
     })
 
-    return fn(6)
-  })
-
-  it('callback', (done) => {
-    aq.callback(
-      Promise.resolve(1),
-      (err, data) => {
-        if (err) done(err)
-        else {
-          assert.equal(data, 1, 'get data')
-
-          aq.callback(
-            Promise.reject(1),
-            (err2, data2) => {
-              if (err2) done()
-              else {
-                done(new Error('do catched error'))
-              }
-            }
-          )
-        }
-      })
+    return fn(6).
+      then((data) => {
+        assert.equal(data.length, result.length, 'check length')
+        assert.deepEqual(data, result, 'check result.')
+      }).
+      then(() => done()).
+      catch((err) => done(err))
   })
 
   it('wrap function(then)', (done) => {
@@ -91,70 +57,79 @@ describe('aq - methods', () => {
       })
 
     wrapFunc(true).
-      then((data) => {
-        assert.equal(data, true, 'check result')
-      }).
+      then((data) => assert.equal(data, true, 'check result')).
       then(() => done()).
       catch((err) => done(err))
   })
 
   it('co function', (done) => {
-    aq.co(function *() {
-      const aq1 = aq.then(1)
-      const aq2 = aq.then(2)
-      const aq3 = aq.then(3)
+    aq.
+      co(function *() {
+        const aq1 = aq.then(1)
+        const aq2 = aq.then(2)
+        const aq3 = aq.then(3)
 
-      return yield [aq1, aq2, aq3]
-    }).
-    then((data) => {
-      assert.deepEqual(data, [1, 2, 3], 'check result')
-    }).
-    then(() => done()).
-    catch((err) => done(err))
+        return yield [aq1, aq2, aq3]
+      }).
+      then((data) => assert.deepEqual(data, [1, 2, 3], 'check result')).
+      then(() => done()).
+      catch((err) => done(err))
   })
 
-  it('back method', (done) => {
-    fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
+  it('pcall a callback with resolve', (done) => {
+    const callback = (err, data) => {
       if (err) return done(err)
 
-      return aq.
-        back((cb) => fs.readFile(testFile, { encoding: 'utf-8' }, cb)).
-        then((fd) => {
-          assert.equal(fd, data, 'check result.')
-        }).
-        then(() => done()).
-        catch((err2) => done(err2))
-    })
+      return done()
+    }
+
+    aq.pcall(Promise.resolve(0), callback)
+  })
+
+  it('pcall a callback with reject', (done) => {
+    const callback = (err, data) => {
+      if (err) return done()
+
+      return done(new Error('incorrect result'))
+    }
+
+    aq.pcall(Promise.reject(1), callback)
+  })
+
+  it('pcall a pending', (done) => {
+    aq.
+      pcall(Promise.resolve(0)).
+      then((data) => aq.pcall(Promise.reject(-1))).
+      then(() => done(new Error('do catched error'))).
+      catch(() => done())
   })
 
   it('call method', (done) => {
-    fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
-      if (err) return done(err)
+    fs.readFile(
+      testFile, { encoding: 'utf-8' },
+      (err, data) => {
+        if (err) return done(err)
 
-      return aq.
-        call(fs, fs.readFile, testFile, { encoding: 'utf-8' }).
-        then((aqData) => {
-          assert.equal(aqData, data, 'check result.')
-        }).
-        then(() => done()).
-        catch((err2) => done(err2))
-    })
+        return aq.
+          call((cb) => fs.readFile(testFile, { encoding: 'utf-8' }, cb)).
+          then((fd) => assert.equal(fd, data, 'check result.')).
+          then(() => done()).
+          catch((err2) => done(err2))
+      })
   })
 
-  it('apply method', (done) => {
-    fs.readFile(testFile, { encoding: 'utf-8' }, (err, data) => {
-      if (err) return done(err)
+  it('invoke method', (done) => {
+    const fn = (a, b) => a + b
 
-      return aq.
-        apply(fs, fs.readFile, [testFile, { encoding: 'utf-8' }]).
-        then((aqData) => {
-          assert.equal(aqData, data, 'check result.')
-        }).
-        then(() => done()).
-        catch((aqErr) => done(aqErr))
-    })
+    aq.
+      invoke(fn, 2, 4).
+      then((data) => assert.equal(data, 6, 'same as result1')).
+      then(() => done()).
+      catch((err) => done(err))
   })
+})
 
+describe('aq - files', () => {
   it('stat file method', (done) => {
     aq.
       statFile(testFile).
@@ -175,9 +150,7 @@ describe('aq - methods', () => {
 
       return aq.
         readFile(testFile, { encoding: 'utf-8' }).
-        then((aqData) => {
-          assert.equal(aqData, data, 'invoke aq.readfile methods failed.')
-        }).
+        then((aqData) => assert.equal(aqData, data, 'failed.')).
         then(() => done()).
         catch((aqErr) => done(aqErr))
     })
@@ -215,7 +188,9 @@ describe('aq - methods', () => {
       then(() => done()).
       catch((err) => done(err))
   })
+})
 
+describe('aq - promises', () => {
   it('series method', (done) => {
     const ary = []
     const q1 = [aq.then(2), aq.then(4), aq.then(6)]
@@ -229,19 +204,13 @@ describe('aq - methods', () => {
       then(() => aq.series(
         q2.map((item) => ary.push(item * 2)))
       ).
-      then(() => {
-        assert.deepEqual(
+      then(() => assert.deepEqual(
           ary, [2, 4, 6, 8, 10], 'function without result.'
-        )
-      }).
+        )).
       then(() => aq.series(q2.map((item) => () => item * 2))).
-      then((data) => {
-        assert.equal(data, 10, 'function without arg.')
-      }).
+      then((data) => assert.equal(data, 10, 'function without arg.')).
       then(() => aq.series(q2.map((item) => (ret) => item * ret), 1)).
-      then((data) => {
-        assert.equal(data, 120, 'function with arg.')
-      }).
+      then((data) => assert.equal(data, 120, 'function with arg.')).
       then(() => done()).
       catch((err) => done(err))
   })
@@ -252,21 +221,17 @@ describe('aq - methods', () => {
 
     aq.
       parallel(q1).
-      then((data) => {
-        assert.deepEqual(data, [2, 4, 6], 'get result.')
-      }).
+      then((data) => assert.deepEqual(data, [2, 4, 6], 'get result.')).
       then(() => aq.parallel([1, 2, aq.then(3)])).
-      then((data) => {
-        assert.deepEqual(data, [1, 2, 3], 'mix vals')
-      }).
+      then((data) => assert.deepEqual(data, [1, 2, 3], 'mix vals')).
       then(() => aq.parallel(q2.map((val) => val * 2))).
-      then((data) => {
+      then((data) =>
         assert.deepEqual(data, [2, 4, 6, 8, 10], 'function without arg.')
-      }).
+      ).
       then(() => aq.parallel(q2.map((val) => (data) => val * data), 2)).
-      then((data) => {
+      then((data) =>
         assert.deepEqual(data, [2, 4, 6, 8, 10], 'function with arg.')
-      }).
+      ).
       then(() => done()).
       catch((err) => done(err))
   })
@@ -277,129 +242,111 @@ describe('aq - methods', () => {
 
     aq.
       race(q1).
-      then((data) => {
-        assert.ok([2, 4, 6].includes(data), 'get result')
-      }).
+      then((data) => assert.ok([2, 4, 6].includes(data), 'get result')).
       then(() => aq.race(q2.map((val) => () => val * 3))).
-      then((data) => {
+      then((data) =>
         assert.ok([3, 6, 9, 12, 15].includes(data), 'function without arg')
-      }).
+      ).
       then(() => aq.race(q2.map((val) => (data) => val * data), 2)).
-      then((data) => {
+      then((data) =>
         assert.ok([2, 4, 6, 8, 10].includes(data), 'function with arg')
-      }).
+      ).
       then(() => done()).
       catch((err) => done(err))
   })
 })
 
 describe('aq - rest', () => {
+  const Server = nblue.fake.http
+
+  const port = 1338
+  const server = new Server(port)
+  const url = `http://127.0.0.1:${port}/`
+
   before(() => server.start())
 
   it('rest method', (done) => {
-    let url = `http://127.0.0.1:${port}/?key1=val1&key2=val2`
+    const rt1 = {
+      key1: 'val1',
+      key2: 'val2'
+    }
+
+    const rt2 = {
+      key1: 'val1',
+      key3: 'val3'
+    }
 
     aq.
-        rest(url).
-        then((data) => {
-          const result = {
-            key1: 'val1',
-            key2: 'val2'
-          }
-
-          assert.deepEqual(data, result, 'Get data from http server error!')
-
-          url = `http://127.0.0.1:${port}/?key1=val1&key3=val3`
-
-          return aq.rest(url)
-        }).
-        then((data) => {
-          const result = {
-            key1: 'val1',
-            key3: 'val3'
-          }
-
-          assert.deepEqual(data, result, 'Get data from http server error!')
-          done()
-        }).
-        catch((err) => done(err))
+      then(0).
+      then(() => aq.rest(`${url}?key1=val1&key2=val2`)).
+      then((data) => assert.deepEqual(data, rt1, 'get data')).
+      then(() => aq.rest(`${url}?key1=val1&key3=val3`)).
+      then((data) => assert.deepEqual(data, rt2, 'get data again')).
+      then(() => done()).
+      catch((err) => done(err))
   })
 
   it('rest failed (response status: 403)', (done) => {
-    const url = `http://127.0.0.1:${port}/`
+    const params = {
+      hasError: true,
+      errorCode: 403
+    }
 
     aq.
-      rest(
-        url,
-        'GET', {
-          hasError: true,
-          errorCode: 403
-        }
-      ).
+      then(0).
+      then(() => aq.rest(url, 'GET', params)).
       then((data) => done(new Error('Should be forbidden.'))).
-      catch((err) => {
-        done(err.status === 403 ? null : err)
-      })
+      catch((err) => done(err.status === 403 ? null : err))
   })
 
   it('rest failed (response status: 404)', (done) => {
-    const url = `http://127.0.0.1:${port}/`
+    const params = {
+      hasError: true,
+      errorCode: 404
+    }
 
     aq.
-      rest(
-        url,
-        'GET', {
-          hasError: true,
-          errorCode: 404
-        }
-      ).
+      then(0).
+      then(() => aq.rest(url, 'GET', params)).
       then((data) => done(new Error('Should be not found.'))).
-      catch((err) => {
-        done(err.status === 404 ? null : err)
-      })
+      catch((err) => done(err.status === 404 ? null : err))
   })
 
   it('rest with error message (response status: 200)', (done) => {
-    const url = `http://127.0.0.1:${port}/`
+    const formBody = {
+      error: {
+        code: 10336,
+        message: 'error'
+      }
+    }
+    const options = {
+      strictMode: true
+    }
 
     aq.
-      rest(
-        url,
-        'POST',
-        {}, {
-          error: {
-            code: 10336,
-            message: 'error'
-          }
-        }, {
-          strictMode: true
-        }
-      ).
+      then(0).
+      then(() => aq.rest(url, 'POST', {}, formBody, options)).
       then((data) => done()).
-      catch((err) => {
-        done(err.status === 200 ? null : err)
-      })
+      catch((err) => done(err.status === 200 ? null : err))
   })
 
   it('rest with error message (response status: 500)', (done) => {
-    const url = `http://127.0.0.1:${port}/`
+    const params = {
+      hasError: true,
+      errorCode: 500
+    }
+    const formBody = {
+      error: {
+        code: 10336,
+        message: 'error'
+      }
+    }
 
     aq.
-      rest(
-        url,
-        'POST', {
-          hasError: true,
-          errorCode: 500
-        }, {
-          error: {
-            code: 10336,
-            message: 'error'
-          }
-        }).
+      then(0).
+      then(() => aq.rest(url, 'POST', params, formBody)).
       then((data) => done(new Error('shoud be json with error node.'))).
-      catch((err) => {
-        done(err.status === 500 ? null : err)
-      })
+      catch((err) => done(err.status === 500 ? null : err))
   })
 
   after(() => server.stop())
