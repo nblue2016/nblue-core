@@ -104,14 +104,14 @@ describe('aq - methods', () => {
       catch(() => done())
   })
 
-  it('call method', (done) => {
+  it('callback method', (done) => {
     fs.readFile(
       testFile, { encoding: 'utf-8' },
       (err, data) => {
         if (err) return done(err)
 
         return aq.
-          call((cb) => fs.readFile(testFile, { encoding: 'utf-8' }, cb)).
+          callback((cb) => fs.readFile(testFile, { encoding: 'utf-8' }, cb)).
           then((fd) => assert.equal(fd, data, 'check result.')).
           then(() => done()).
           catch((err2) => done(err2))
