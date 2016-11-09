@@ -4,6 +4,7 @@ const nblue = require('../../lib')
 
 const aq = nblue.aq
 const ConfigMap = nblue.ConfigMap
+const IIf = nblue.IIf
 
 const cf = new ConfigMap()
 
@@ -98,11 +99,10 @@ describe('config', () => {
     ConfigMap.
       parseConfig(configFile, ['debug', 'qa']).
       then((data) => {
-        assert.equal(
-          data.get('databases').get('dbtest'),
-          'connection string for test with debug mode',
-          'get databases.dbtest from config by callback'
-        )
+        const source = data.get('databases').get('dbtest')
+        const target = 'connection string for test with debug mode'
+
+        assert.equal(source, target, 'compare value')
       }).
       then(() => done()).
       catch((err) => done(err))
@@ -115,11 +115,10 @@ describe('config', () => {
         parseConfig(configFile, 'debug', (err, data) => {
           if (err) return done(err)
 
-          assert.equal(
-            data.get('databases').get('dbtest'),
-            'connection string for test with debug mode',
-            'get databases.dbtest from config'
-          )
+          const source = data.get('databases').get('dbtest')
+          const target = 'connection string for test with debug mode'
+
+          assert.equal(source, target, 'compare value')
 
           return done()
         })
@@ -142,11 +141,9 @@ describe('config', () => {
 
     ConfigMap.
       parseConfig(configFile).
-      then((data) => {
-        if (!data) return done()
-
-        return done(new Error('get data for by invalid file name.'))
-      }).
+      then((data) => IIf(data, Promise.reject(-1), 1)).
+      catch(() => null).
+      then(() => done()).
       catch((err) => done(err))
   })
 })
