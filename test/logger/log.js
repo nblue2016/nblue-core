@@ -1,6 +1,6 @@
 const assert = require('assert')
-const core = require('../../lib')
-const Logger = core.Logger
+const nblue = require('../../lib')
+const Logger = nblue.Logger
 
 const outputter = Logger.createMemoryOutputter()
 const logger = new Logger(outputter)
