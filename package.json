@@ -2,7 +2,7 @@
   "name": "nblue",
   "description": "The core runtime for nblue framework",
   "homepage": "https://github.com/nblue2016/",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "author": {
     "name": "Bruce Jiang",
     "email": "bruce1977@live.com"
@@ -10,8 +10,8 @@
   "keywords": [
     "nblue",
     "betch",
-    "native extend",
-    "runtime",
+    "aq",
+    "koa",
     "async query"
   ],
   "repository": {
@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=6.8.0"
   },
   "dependencies": {
     "co": "^4.6.0",
