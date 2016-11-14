@@ -2,6 +2,7 @@ require('../lib/')
 
 const testScripts = [
   './global.js',
+  './native/array.js',
   './native/date.js',
   './native/stringbuilder.js',
   './promise.js',
