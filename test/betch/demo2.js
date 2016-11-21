@@ -2,10 +2,17 @@ script({
   $metas: {
     $version: '1.0.0',
     $args: {
-      a1: 6,
+      a1: {
+        default: 6,
+        type: 'int'
+      },
       a2: {
         default: 'test',
         type: 'string'
+      },
+      a3: {
+        default: '2016/10/10',
+        type: 'date'
       }
     }
   },

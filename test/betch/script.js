@@ -89,8 +89,14 @@ describe('betch - script', () => {
     }
 
     const arg2 = {
-      a1: 1,
-      a2: 5
+      a1: 'good',
+      a2: 'better'
+    }
+
+    const arg3 = {
+      a1: 101,
+      a2: 'better',
+      a3: 'good'
     }
 
     co(function *() {
@@ -105,9 +111,19 @@ describe('betch - script', () => {
       rt = yield betch$(scriptFile2, arg1)
       assert.deepEqual(rt, target3.r1, 'target3')
 
-      return betch$(scriptFile2, arg2).
-              then(() => Promise.reject(-1)).
-              catch((err) => assert.notEqual(err, -1, 'catched error'))
+      betch$(scriptFile2, arg2).
+        then(() => Promise.reject(-1)).
+        catch((err) => {
+          assert.ok(err, 'found error')
+          assert.notEqual(err, -1, 'catched error')
+        })
+
+      betch$(scriptFile2, arg3).
+        then(() => Promise.reject(-1)).
+        catch((err) => {
+          assert.ok(err, 'found error')
+          assert.notEqual(err, -1, 'catched error')
+        })
     }).
     then(() => done()).
     catch((err) => done(err))
