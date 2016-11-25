@@ -92,6 +92,10 @@ describe('config', () => {
           // check settings section in config
           const settings = config.Settings
 
+          for (const [k, v] of settings) {
+            assert.ok(`${k}: ${v}`, 'ok')
+          }
+
           assert.equal(settings.get('port'), 8088, 'ok')
           assert.equal(settings.get('port2'), null, 'ok')
           assert.equal(settings.get('port2', 8090), 8090, 'ok')
