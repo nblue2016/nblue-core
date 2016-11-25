@@ -78,6 +78,7 @@ describe('config', () => {
             config.get(keyOfName), valueOfName, 'get value by name key'
           )
 
+          // check database section in config
           const databases = config.get('databases')
 
           if (!databases) {
@@ -87,6 +88,13 @@ describe('config', () => {
           assert.ok(databases.has('dbtest'), 'has dbtest key')
           assert.ok(databases.has('dbsys'), 'has dbsys key')
           assert.ok(!databases.has('dbuser'), 'hasn\'t dbuser key')
+
+          // check settings section in config
+          const settings = config.Settings
+
+          assert.equal(settings.get('port'), 8088, 'ok')
+          assert.equal(settings.get('port2'), null, 'ok')
+          assert.equal(settings.get('port2', 8090), 8090, 'ok')
         })
       }).
       then(() => done()).

@@ -4,6 +4,7 @@ const testScripts = [
   './global.js',
   './native/array.js',
   './native/date.js',
+  './native/map.js',
   './native/stringbuilder.js',
   './promise.js',
   './conf/conf.js',

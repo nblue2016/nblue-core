@@ -1,6 +1,6 @@
 const assert = require('assert')
 
-describe('date functions', () => {
+describe('date', () => {
   it('method of format', () => {
     const d1 = new Date(2016, 1, 5, 14, 33, 12)
         // Date.parseDate('2016/02/05 14:33:12')
