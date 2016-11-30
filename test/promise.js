@@ -8,29 +8,46 @@ describe('promise extend', () => {
   })
 
   it('without done', (done) => {
-    process.once('unhandledRejection', (reason, p) => {
-      done()
-    })
+    process.once('unhandledRejection', () => done())
 
     Promise.reject('error#3')
   })
 
-  it('with done', () => {
-    let handle = false
+  const arys = [
+    'with done (Promise.reject)',
+    'with done (throw error)'
+  ]
 
-    process.once('uncaughtException', () => {
-      handle = true
+  arys.
+    forEach((des, index) => {
+      it(des, (done) => {
+        // const listeners = process.listeners('uncaughtException')
+        const oriListeners = process.listeners('uncaughtException')
+        const newListener = () => {
+          oriListeners.forEach(
+            (item) => process.listeners('uncaughtException').push(item)
+          )
+
+          done()
+        }
+
+        // remove original listeners
+        oriListeners.forEach(
+          (item) => process.removeListener('uncaughtException', item)
+        )
+
+        process.once('uncaughtException', newListener)
+
+        Promise.
+          resolve(0).
+          then(() => {
+            if (index === 0) return Promise.reject('error')
+
+            throw new Error('error')
+          }).
+          done()
+      })
     })
-
-    Promise.
-      reject('error#4').
-      done()
-
-    setTimeout(
-      () => assert.ok(handle, 'catched error'),
-      10
-    )
-  })
 
   it('finally function', (done) => {
     let

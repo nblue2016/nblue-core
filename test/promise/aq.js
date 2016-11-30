@@ -38,10 +38,10 @@ describe('aq - methods', () => {
         }
       }
 
-      return ary
+      return aq.then(ary)
     })
 
-    return fn(6).
+    fn(6).
       then((data) => {
         assert.equal(data.length, result.length, 'check length')
         assert.deepEqual(data, result, 'check result.')

@@ -2,7 +2,7 @@
   "name": "nblue",
   "description": "The core runtime for nblue framework",
   "homepage": "https://github.com/nblue2016/",
-  "version": "0.0.33",
+  "version": "0.0.35",
   "author": {
     "name": "Bruce Jiang",
     "email": "bruce1977@live.com"
@@ -24,11 +24,12 @@
   },
   "dependencies": {
     "co": "^4.6.0",
-    "js-yaml": "^3.6.1"
+    "js-yaml": "^3.6.1",
+    "node-fetch": "^1.6.3"
   },
   "devDependencies": {
     "eslint": "^2.10.2",
-    "mocha": "^2.3.4"
+    "mocha": "^3.2.0"
   },
   "directories": {},
   "files": [
