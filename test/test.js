@@ -8,7 +8,9 @@ betch({
   b: 2,
   _: (ctx) => ctx.a * ctx.b
 }).
-then((data) => console.log(`a1: ${data}`))
+then((data) => {
+  console.log(`a1: ${data}`)
+})
 
 co(function *() {
   const a = yield aq.then(1)
