@@ -1,12 +1,6 @@
 require('../lib/')
 
 const testScripts = [
-  './global.js',
-  './native/array.js',
-  './native/date.js',
-  './native/map.js',
-  './native/stringbuilder.js',
-  './promise.js',
   './conf/conf.js',
   './logger/log.js',
   './promise/aq.js',

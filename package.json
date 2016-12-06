@@ -1,7 +1,7 @@
 {
   "name": "nblue",
   "description": "The core runtime for nblue framework",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "homepage": "https://github.com/nblue2016/",
   "author": {
     "name": "Bruce Jiang",
@@ -25,6 +25,7 @@
   "dependencies": {
     "co": "^4.6.0",
     "js-yaml": "^3.6.1",
+    "nblue-extend": "0.0.3",
     "node-fetch": "^1.6.3"
   },
   "devDependencies": {

@@ -171,6 +171,7 @@ describe('aq - files', () => {
       readLines(testFile, options).
       then((fdata) => {
         assert.equal(fdata.length, lines.length, 'count of lines')
+
         Array.
           range(0, fdata.length).
           forEach((index) => {
