@@ -20,12 +20,12 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=6.8.0"
+    "node": ">=6.7.0"
   },
   "dependencies": {
     "co": "^4.6.0",
     "js-yaml": "^3.6.1",
-    "nblue-extend": "0.0.3",
+    "nblue-extend": "0.0.6",
     "node-fetch": "^1.6.3"
   },
   "devDependencies": {
