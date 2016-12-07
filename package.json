@@ -1,7 +1,7 @@
 {
-  "name": "nblue",
+  "name": "nblue-core",
   "description": "The core runtime for nblue framework",
-  "version": "0.0.38",
+  "version": "0.0.50",
   "homepage": "https://github.com/nblue2016/",
   "author": {
     "name": "Bruce Jiang",
@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nblue2016/nblue.git"
+    "url": "git+https://github.com/nblue2016/nblue-core.git"
   },
   "license": "MIT",
   "engines": {
@@ -43,11 +43,10 @@
   },
   "main": "./lib/index.js",
   "scripts": {
-    "test": "mocha ./test/start --no-warnings",
-    "test-betch": "node ./test/betch/test"
+    "test": "mocha ./test/start --no-warnings"
   },
   "bugs": {
-    "url": "https://github.com/nblue2016/nblue/issues/new",
+    "url": "https://github.com/nblue2016/nblue-core/issues/new",
     "email": "nblue2016@163.com"
   }
 }
