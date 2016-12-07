@@ -1,11 +1,11 @@
 # nblue
 ## Introduction
-nblue is core module for nblue framework, it includes more useful class and module. The full package was written by ES6, so it'd better run more than node v6.0.
+nblue-core is core module for nblue framework, it includes more useful class and module. The full package was written by ES6, so it'd better run more than node v6.7.
 
 ## Installation:
 You can use npm to install nblue
 ```
-npm install nblue
+npm install nblue-core
 ```
 
 Run test cases with mocha
@@ -16,37 +16,12 @@ npm test
 
 ## Usage
 
-### betch
-**betch** is core module of nblue, it can be easy to apply list of promises one by one or merge their result by array. Also, the betch can apply a predefined script with arguments. betch was created base on co, but it add more complex features, for more details you can read  [this document](https://github.com/nblue2016/nblue/blob/master/doc/betch.md)
-``` javascript
-const betch = require('nblue').betch
-
-// use an object to execute promises one by one
-betch({
-  r1: Promise.resolve(1),
-  r2: (ctx, data) => Promise.resolve(data + 2),
-  r3: (ctx, data) => data + 3
-}).
-then((data) => {
-  console.log(data) // data should be 6
-})
-
-// or use array to execute promises with parallel mode
-betch([
-  Promise.resolve(1),
-  Promise.resolve(2),
-  Promise.resolve(3)
-]).
-then((data) => {
-  console.log(data) // data should be [1, 2, 3]
-})
-```
-
 ### aq
 **aq** is a static class, it can package a value or function to return a ES6 Promise. You can see following example to learn main usage about it, for more details, please see the [document](https://github.com/nblue2016/nblue/blob/master/doc/aq.md) by link
 
 ``` javascript
-const aq = require('nblue').aq
+const nblue = require('nblue-core')
+const aq = nblue.aq
 
 // promise a value
 aq.
@@ -54,6 +29,9 @@ aq.
   then((data) => {
     console.log(data) // data is test
   })
+
+// it equal following statement
+Promise.resolve('test')
 
 // read an file
 const path = require('path')
@@ -77,27 +55,95 @@ aq.
 
 ```
 
-### native object extends
-nblue extends some methods for native object
+### betch
+**betch** is mostly feature of nblue, it can be easy to apply list of promises one by one or merge their result by array. Also, the betch can apply a predefined script with arguments. betch was created base on co, but it add more complex features, for more details you can read  [this document](https://github.com/nblue2016/nblue/blob/master/doc/betch.md)
 
-Append finally and done method for Promise
+betch an object will apply Promises one by one and returns the latest result
 ``` javascript
+const nblue = require('nblue-core')
+const betch = nblue.betch
 
+// use an object to execute promises one by one
+betch({
+  r1: Promise.resolve(1),
+  r2: (ctx, data) => Promise.resolve(data + 2),
+  r3: (ctx, data) => data + 3
+}).
+then((data) => {
+  console.log(data) // data should be 6
+})
 ```
 
-StringBuilder class
+We get the full result for every key with $fullReturn argument
 
-Add some methods for date object
+``` javascript
+// use an object to execute promises one by one
+betch({
+  r1: Promise.resolve(1),
+  r2: (ctx, data) => Promise.resolve(data + 2),
+  r3: (ctx, data) => data + 3
+}, { $fullReturn: true}).
+then((data) => {
+  console.log(data) // data should be { r1:1, r2:3, r3:6 }
+})
+```
 
-### ConfigMap and Logger
+``` javascript
+// or use array to execute promises with parallel mode
+betch([
+  Promise.resolve(1),
+  Promise.resolve(2),
+  Promise.resolve(3)
+]).
+then((data) => {
+  console.log(data) // data should be [1, 2, 3]
+})
+```
+
+use betch$ to run script
+``` javascript
+// define script file in folder
+script({
+  r1: 1,
+  r2: Promise.resolve(2),
+  r3: (ctx) => {
+    if (ctx.$args && ctx.$args.a1) {
+      return ctx.$args.a1
+    }
+
+    return 5
+  }
+})
+
+// or use array to execute promises with parallel mode
+betch(`${__dirname}//script.js`).
+then((data) => {
+  console.log(data) // data should be 5
+})
+
+// using argument in options
+betch(`${__dirname}//script.js`, { a1: 20 }).
+then((data) => {
+  console.log(data) // data should be 20
+})
+```
+
+### ConfigMap
+
+### Logger
+
+### native object extends
+The native extends has been move to new package nblue-extend, it can be used in both of client and server side now, you can find it by following link
+
+[nblue-extend] (https://github.com/nblue2016/nblue-extend)
 
 
 For more details, you can find these by following link
 - [betch](https://github.com/nblue2016/nblue/blob/master/doc/betch.md)
 - [aq](https://github.com/nblue2016/nblue/blob/master/doc/aq.md)
-- [native extend](https://github.com/nblue2016/nblue/blob/master/doc/native.md)
 - [configmap](https://github.com/nblue2016/nblue/blob/master/doc/configmap.md)
 - [logger](https://github.com/nblue2016/nblue/blob/master/doc/logger.md)
+- [native extend](https://github.com/nblue2016/nblue-extend/blob/master/readme.md)
 
 ## License
 
