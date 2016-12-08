@@ -1,4 +1,9 @@
-# nblue
+# nblue-core
+
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/nblue2016/Lobby)
+
+[![NPM](https://nodei.co/npm/nblue-core.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/nblue-core/)
+
 ## Introduction
 nblue-core is core module for nblue framework, it includes more useful class and module. The full package was written by ES6, so it'd better run more than node v6.7.
 
