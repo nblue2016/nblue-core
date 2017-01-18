@@ -1,6 +1,6 @@
 require('../lib/')
 
-const testScripts = [
+const scripts = [
   './conf/conf.js',
   './logger/log.js',
   './promise/aq.js',
@@ -8,8 +8,9 @@ const testScripts = [
   './betch/script.js'
 ]
 
-testScripts.forEach((script) => {
-  if (script.startsWith('#')) return
+scripts.
+  forEach((script) => {
+    if (script.startsWith('#')) return
 
-  require(script)
-})
+    require(script)
+  })

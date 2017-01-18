@@ -1,17 +1,17 @@
 {
   "name": "nblue-core",
   "description": "The core runtime for nblue framework",
-  "version": "0.0.53",
+  "version": "0.0.55",
   "homepage": "https://github.com/nblue2016/",
   "author": {
     "name": "Bruce Jiang",
     "email": "bruce1977@live.com"
   },
   "keywords": [
+    "core",
     "nblue",
     "betch",
     "aq",
-    "koa",
     "async query"
   ],
   "repository": {
@@ -25,7 +25,7 @@
   "dependencies": {
     "co": "^4.6.0",
     "js-yaml": "^3.6.1",
-    "nblue-extend": "^1.0.6",
+    "nblue-extend": "^1.0.8",
     "node-fetch": "^1.6.3"
   },
   "devDependencies": {
