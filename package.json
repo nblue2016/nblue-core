@@ -1,14 +1,15 @@
 {
   "name": "nblue-core",
   "description": "The core runtime for nblue framework",
-  "version": "0.0.55",
+  "version": "0.0.56",
   "homepage": "https://github.com/nblue2016/",
   "author": {
     "name": "Bruce Jiang",
     "email": "bruce1977@live.com"
   },
   "keywords": [
-    "core",
+    "string builder",
+    "uuid",
     "nblue",
     "betch",
     "aq",
