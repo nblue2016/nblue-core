@@ -1,7 +1,7 @@
 {
   "name": "nblue-core",
   "description": "The core runtime for nblue framework",
-  "version": "0.0.56",
+  "version": "0.0.57",
   "homepage": "https://github.com/nblue2016/",
   "author": {
     "name": "Bruce Jiang",
