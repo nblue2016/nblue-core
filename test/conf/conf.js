@@ -115,6 +115,25 @@ describe('config', () => {
         const target = 'connection string for test with debug mode'
 
         assert.equal(source, target, 'compare value')
+
+        const modules = [
+          'name',
+          'databases',
+          'logger',
+          'middlewares'
+        ]
+
+        assert.deepEqual(data.Modules, modules, 'get modules')
+
+        assert.ok(data.module('name'), 'get module')
+        assert.ok(data.module('databases'), 'get module')
+        assert.ok(data.module('logger'), 'get module')
+        assert.ok(data.module('middlewares'), 'get module')
+
+        assert.ok(!data.module('unknown'), 'get module')
+
+        assert.equal(data.getEnv('test', 0), 0, 'ok')
+        assert.ok(data.getEnv('NODE', null), 'ok')
       }).
       then(() => done()).
       catch((err) => done(err))
@@ -153,7 +172,7 @@ describe('config', () => {
 
     ConfigMap.
       parseConfig(configFile).
-      then((data) => IIf(data, Promise.reject(-1), 1)).
+      then((data) => IIf(data, Promise.reject(), 1)).
       catch(() => null).
       then(() => done()).
       catch((err) => done(err))

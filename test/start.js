@@ -14,6 +14,7 @@ assert.ok(UUID.generate(), 'uuid')
 
 // declare array of test scripts
 const scripts = [
+  './iif.js',
   './conf/conf.js',
   './logger/log.js',
   './promise/aq.js',

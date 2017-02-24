@@ -97,4 +97,42 @@ describe('logger', () => {
     assert.equal(entries.length, 3, 'test engine 1')
     outputter.clear()
   })
+
+  it('module', () => {
+    logger.setLogLevel('DataEngine', 4)
+    logger.DebugMode = true
+
+    const log = logger.module('DataEngine')
+
+    assert.equal(log.AppName, 'DataEngine', 'OK')
+    assert.equal(log.Level, 4, 'OK')
+    assert.ok(log.DebugMode, 'OK')
+
+    log.warning('warning')
+    log.info('info')
+    log.verbose('verbose')
+
+    const target = 'Warning - warning\r\nInfo - info\r\nVerbose - verbose'
+
+    assert.equal(outputter.toString(), target, 'ok')
+  })
+
+  it('args', () => {
+    const outputter2 = Logger.createMemoryOutputter()
+    const target = {
+      arg1: 1,
+      arg2: 'goodman'
+    }
+
+    outputter2.logMore = (args) => {
+      assert.deepEqual(args, target, 'ok')
+    }
+
+    const logger2 = new Logger(outputter2, { app: 'test' })
+
+    logger2.info('test', {
+      arg1: 1,
+      arg2: 'goodman'
+    })
+  })
 })
