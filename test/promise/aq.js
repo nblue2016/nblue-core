@@ -104,6 +104,34 @@ describe('aq - methods', () => {
       catch(() => done())
   })
 
+  it('nodeify a callback with resolve', (done) => {
+    const callback = (err, data) => {
+      if (err) return done(err)
+
+      return done()
+    }
+
+    aq.nodeify(Promise.resolve(0), callback)
+  })
+
+  it('nodeify a callback with reject', (done) => {
+    const callback = (err, data) => {
+      if (err) return done()
+
+      return done(new Error('incorrect result'))
+    }
+
+    aq.nodeify(Promise.reject(1), callback)
+  })
+
+  it('nodeify a pending', (done) => {
+    aq.
+      nodeify(Promise.resolve(0)).
+      then((data) => aq.pcall(Promise.reject(-1))).
+      then(() => done(new Error('do catched error'))).
+      catch(() => done())
+  })
+
   it('callback method', (done) => {
     fs.readFile(
       testFile, { encoding: 'utf-8' },

@@ -13,6 +13,4 @@ class YAML
 
 }
 
-// if (!global.YAML) global.YAML = YAML
-
 module.exports = YAML

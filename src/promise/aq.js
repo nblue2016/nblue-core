@@ -48,13 +48,13 @@ class aq extends co
   }
 
   // let a promise support callback
-  static pcall (pending, callback) {
-    if (!pending) throw new Error('Null reference of promise.')
-    if (pending instanceof Promise === false) {
+  static pcall (promise, callback) {
+    if (!promise) throw new Error('Null reference of promise.')
+    if (promise instanceof Promise === false) {
       throw new Error('promise is not a Promise.')
     }
 
-    return pending.
+    return promise.
       then((data) => {
         if (callback) return callback(null, data)
 
@@ -65,6 +65,12 @@ class aq extends co
 
         throw err
       })
+  }
+
+  // convert a promise to use node style callback
+  // it is same as pcall
+  static nodeify (promise, callback) {
+    return aq.pcall(promise, callback)
   }
 
   // create a promise for the method with callback argument

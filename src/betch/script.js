@@ -26,9 +26,13 @@ class Script
   }
 
   init (ctx) {
-    const that = this
+    // get metas
     const metas = this.Metas
+
+    // get arguments from metas
     const args = metas.$args
+
+    // get context arguments from context
     const ctxArgs = ctx.$args || {}
 
     for (const [key, arg] of Object.entries(args)) {
@@ -49,7 +53,7 @@ class Script
             const val = ctxArgs[key]
 
             // set converted value to args
-            ctxArgs[key] = that.convertArg(val, arg.type)
+            ctxArgs[key] = this.convertArg(val, arg.type)
           }
         } catch (err) {
           throw new Error(`invalid type for arg: ${key}`)
@@ -57,10 +61,12 @@ class Script
       }
     }
 
+    // bind new arguments to context
     ctx.$args = ctxArgs
   }
 
   convertArg (val, type) {
+    // declare
     let rt = val
 
     switch (type.toLowerCase()) {

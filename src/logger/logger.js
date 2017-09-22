@@ -13,14 +13,18 @@ class Logger
 {
 
   constructor (outputter, options) {
+    // get outputter from argument or use default one
     this._outputter = outputter ? outputter : Logger.createConsoleOutputter()
 
+    // assign options to opts
     const opts = options || {}
 
+    // get application name, line format and debug mode from options
     this._appName = opts.app || DEFAULT_APP_NAME
     this._lineFormat = opts.lineFormat || DEFAULT_LINE_FORMAT
     this._debugMode = opts.debugMode || false
 
+    // initialize log levels
     this._logLevels = new Map()
     this._logLevels.set(this._appName, opts.logLevel || DEFAULT_LOG_LEVEL)
   }
@@ -95,6 +99,8 @@ class Logger
     if (this.DebugMode) this.info(message, appName)
   }
 
+  // the method will return new instance of logger by module name
+  // it will use current outputter
   module (appName) {
     const options = {
       app: appName,
@@ -162,11 +168,11 @@ class Logger
   }
 
   logMore (args, items) {
-    // ignore if there is no logMore function
-    if (!this._outputter.logMore) return
-
-    // write args and itmes to outputter
-    if (args) this._outputter.logMore(args, items)
+    // output more information if current outputter has logMore method
+    if (this._outputter.logMore && args) {
+      // output args and itmes
+      this._outputter.logMore(args, items)
+    }
   }
 
   getTimespanFormat (timeSpan) {

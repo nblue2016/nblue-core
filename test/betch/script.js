@@ -50,7 +50,7 @@ describe('betch - script', () => {
     }
 
     aq.
-      run(scriptFile3, ctx).
+      betch$(scriptFile3, ctx).
       then((data) => {
         const keys = data ? Object.keys(data) : []
         const errorKeys = ctx && ctx.$errors
@@ -131,7 +131,7 @@ describe('betch - script', () => {
 
   it('catch error', (done) => {
     aq.
-      run('unknown', {}).
+      betch$('unknown', {}).
       then(() => done(new Error('uncatched invalid file name'))).
       catch(() => betch$('test', {})).
       then(() => done(new Error('uncatched dir'))).
@@ -142,7 +142,7 @@ describe('betch - script', () => {
 
   it('run script with cache feature', (done) => {
     aq.
-      run(scriptFile4).
+      betch$(scriptFile4).
       then((data) => {
         assert.equal(data, 'val1', 'get value from cache')
 
@@ -160,9 +160,11 @@ describe('betch - script', () => {
 
   it('run script with cache handle', (done) => {
     aq.
-      run(scriptFile6).
+      betch$(scriptFile6).
       then(() => betch$(scriptFile6)).
-      then((data) => assert.deepEqual({ key1: 'val1' }, data, 'equal')).
+      then((data) => {
+        assert.deepEqual({ key1: 'val1' }, data, 'equal')
+      }).
       then(() => done()).
       catch((err) => done(err))
   })
