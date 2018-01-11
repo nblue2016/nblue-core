@@ -148,20 +148,20 @@ class Betch {
         // read content from file by name
         return aq.readFile(scriptFile, { encoding: 'utf-8' })
       }).
-      catch(() => {
+        catch(() => {
         // throw error if the script has incorrect file name
-        if (fs === null || !fs.isFile()) {
-          throw new Error(`invalid script file: ${scriptFile}`)
-        }
+          if (fs === null || !fs.isFile()) {
+            throw new Error(`invalid script file: ${scriptFile}`)
+          }
 
-        // throw error read file stream failed
-        throw new Error(`read script file: ${scriptFile} failed`)
-      })
+          // throw error read file stream failed
+          throw new Error(`read script file: ${scriptFile} failed`)
+        })
     }
 
     // define function to parse script
     const parseScript = (fdata, ctx) => {
-        // parse script content
+      // parse script content
       const $$ = (() => {
         try {
           return eval(fdata)
@@ -192,8 +192,8 @@ class Betch {
 
         // assign errors from context to options
         Object.assign(
-            options[flagOfErrors], ctx[flagOfErrors]
-          )
+          options[flagOfErrors], ctx[flagOfErrors]
+        )
       }
 
       // return result
@@ -212,8 +212,9 @@ class Betch {
       const ps = parseScript(rs, ctx)
 
       // execute script
-      return Betch.run(ps, ctx, data).
-          then((rt) => procError(ctx, rt))
+      return Betch.
+        run(ps, ctx, data).
+        then((rt) => procError(ctx, rt))
     })
   }
 

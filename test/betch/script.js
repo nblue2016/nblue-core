@@ -125,8 +125,8 @@ describe('betch - script', () => {
           assert.notEqual(err, -1, 'catched error')
         })
     }).
-    then(() => done()).
-    catch((err) => done(err))
+      then(() => done()).
+      catch((err) => done(err))
   })
 
   it('catch error', (done) => {

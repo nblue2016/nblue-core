@@ -8,8 +8,7 @@ const StringBuilder = lib.StringBuilder
 // define const varinats
 const JsonContent = 'application/json'
 
-class aq extends co
-{
+class aq extends co {
 
   static getModule (name) {
     try {
@@ -218,7 +217,7 @@ class aq extends co
         rl.on('error', (err) => reject(err))
         rl.on('close', () => resolve(lines))
       })
-    )
+      )
   }
 
   // define function of creating error with response
@@ -362,9 +361,9 @@ class aq extends co
 
       // append content-type to header
       if (!Object.
-          keys(newHeaders).
-          map((key) => key.toLowerCase()).
-          includes('content-type')) {
+        keys(newHeaders).
+        map((key) => key.toLowerCase()).
+        includes('content-type')) {
         newHeaders['Content-Type'] = 'application/x-www-form-urlencoded'
       }
 
@@ -406,9 +405,9 @@ class aq extends co
 
       // append content-type to header
       if (!Object.
-          keys(newHeaders).
-          map((key) => key.toLowerCase()).
-          includes('content-type')) {
+        keys(newHeaders).
+        map((key) => key.toLowerCase()).
+        includes('content-type')) {
         newHeaders['Content-Type'] = JsonContent
       }
 

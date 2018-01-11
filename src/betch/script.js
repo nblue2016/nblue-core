@@ -4,8 +4,7 @@ const defaultMetas = {
   $args: {}
 }
 
-class Script
-{
+class Script {
 
   constructor (metas, body) {
     this._metas = {}

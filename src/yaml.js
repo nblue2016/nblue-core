@@ -1,7 +1,6 @@
 const jsYaml = require('js-yaml')
 
-class YAML
-{
+class YAML {
 
   static parse (yaml) {
     return jsYaml.safeLoad(yaml)

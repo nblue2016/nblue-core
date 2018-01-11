@@ -16,21 +16,20 @@ const KEY_OF_SETTINGS = 'settings'
 
 const DefaultEnvs = ['debug', 'release']
 
-class ConfigMap extends Map
-{
+class ConfigMap extends Map {
 
   // the static method parses a map object to new instance of ConfigMap
   static parseMap (map) {
-      // check arguments for key
+    // check arguments for key
     if (!map) throw new ReferenceError('map')
 
-      // create new instance of ConfigMap
+    // create new instance of ConfigMap
     const cf = new ConfigMap()
 
-      // copy data from map
+    // copy data from map
     cf.copy(map)
 
-      // convert cf to JSON and parse it.
+    // convert cf to JSON and parse it.
     return ConfigMap.parseJSON(cf.toJSON(true))
   }
 
@@ -46,62 +45,61 @@ class ConfigMap extends Map
 
   // the static method parses an object to new instance of ConfigMap
   static parse (options) {
-      // create new instance of config map
+    // create new instance of config map
     const cMap = new ConfigMap()
 
-      // convert object to map object
+    // convert object to map object
     const parseKeys = (obj, map) => {
-        // create new instance of Map if the arg doesn't exist
+      // create new instance of Map if the arg doesn't exist
       let newMap = map
 
       if (!newMap) newMap = new Map()
-        // if (!obj) return newMap
       if (!obj) return null
 
-        // fetch all key in object
+      // fetch all key in object
       Object.
-          keys(obj).
-          forEach((key) => {
-            // ingore comment or system key
-            if (key.startsWith('#') || key.startsWith('$$')) return
+        keys(obj).
+        forEach((key) => {
+          // ingore comment or system key
+          if (key.startsWith('#') || key.startsWith('$$')) return
 
-            // get value by key
-            let value = obj[key]
+          // get value by key
+          let value = obj[key]
 
-            if (Array.isArray(value)) {
-              value = value.map((val) => {
-                if (typeof val === 'object') return parseKeys(val)
+          if (Array.isArray(value)) {
+            value = value.map((val) => {
+              if (typeof val === 'object') return parseKeys(val)
 
-                return val
-              })
-              newMap.set(key, value)
+              return val
+            })
+            newMap.set(key, value)
 
-              return
-            } else if (typeof value === 'object') {
-              // create new map for object value
-              newMap.set(key, parseKeys(value))
+            return
+          } else if (typeof value === 'object') {
+            // create new map for object value
+            newMap.set(key, parseKeys(value))
 
-              return
-            }
+            return
+          }
 
-            if (typeof value === 'string') {
-              // allow use ${expression} to define
-              // an expression and apply it in runtime
-              if (value.startsWith('${') && value.endsWith('}')) {
-                const expression = value.substring(2, value.length - 1)
+          if (typeof value === 'string') {
+            // allow use ${expression} to define
+            // an expression and apply it in runtime
+            if (value.startsWith('${') && value.endsWith('}')) {
+              const expression = value.substring(2, value.length - 1)
 
-                try {
-                  // convert express to value
-                  value = expression.eval()
-                } catch (err) {
-                  throw new Error(`Can't parse expression: ${expression}`)
-                }
+              try {
+                // convert express to value
+                value = expression.eval()
+              } catch (err) {
+                throw new Error(`Can't parse expression: ${expression}`)
               }
             }
+          }
 
-            // set value by current key
-            newMap.set(key, value)
-          })
+          // set value by current key
+          newMap.set(key, value)
+        })
 
         // return created map
       return newMap
@@ -109,8 +107,7 @@ class ConfigMap extends Map
 
     parseKeys(options, cMap)
 
-      // append system variants
-
+    // append system variants
     if (options[SYSKEY_OF_VERSION]) {
       cMap._version = options[SYSKEY_OF_VERSION]
     }
@@ -133,16 +130,16 @@ class ConfigMap extends Map
 
     // read file stream and parse to a new instance of ConfigMap
     return aq.
-        statFile(fileName).
-        then(() => aq.readFile(fileName, { encoding: 'utf-8' })).
-        then((data) => {
-          if (newExt === '.json' || newExt === '.config') {
-            return ConfigMap.parseJSON(data)
-          }
+      statFile(fileName).
+      then(() => aq.readFile(fileName, { encoding: 'utf-8' })).
+      then((data) => {
+        if (newExt === '.json' || newExt === '.config') {
+          return ConfigMap.parseJSON(data)
+        }
 
-          return ConfigMap.parseYAML(data)
-        }).
-        catch(() => null)
+        return ConfigMap.parseYAML(data)
+      }).
+      catch(() => null)
   }
 
   // the static method create new instance of ConfigMap with file name (sync)
@@ -200,44 +197,44 @@ class ConfigMap extends Map
 
     // generate array of envirnments
     newEnvs = newEnvs.map((env) => String.format(
-        '%s/%s.%s%s', fpath.dir, fpath.name, env, ext))
+      '%s/%s.%s%s', fpath.dir, fpath.name, env, ext))
 
     return aq.nodeify(
-        co(function *() {
-          // create instance of config by file name
-          const config = yield ConfigMap.readConfig(configFile, ext)
+      co(function *() {
+        // create instance of config by file name
+        const config = yield ConfigMap.readConfig(configFile, ext)
 
-          // throw error if parse failed
-          if (!config) throw new Error(`parse file:${configFile} failed.`)
+        // throw error if parse failed
+        if (!config) throw new Error(`parse file:${configFile} failed.`)
 
-          // create generator function to read config file for envirnments
-          const gen = function *(env) {
-            // get data by envirnment name
-            const data = yield ConfigMap.readConfig(env, ext)
+        // create generator function to read config file for envirnments
+        const gen = function *(env) {
+          // get data by envirnment name
+          const data = yield ConfigMap.readConfig(env, ext)
 
-            // merge envirnment's config to current config
-            if (data) config.merge(data)
+          // merge envirnment's config to current config
+          if (data) config.merge(data)
 
-            // return merged config
-            return config
-          }
-
-          // invoke generator function for every envirnment
-          if (newEnvs && newEnvs.length > 0) {
-            return aq.series(newEnvs.map((env) => co(gen(env))))
-          }
-
-          // return full config
+          // return merged config
           return config
-        }),
-        callback
-      )
+        }
+
+        // invoke generator function for every envirnment
+        if (newEnvs && newEnvs.length > 0) {
+          return aq.series(newEnvs.map((env) => co(gen(env))))
+        }
+
+        // return full config
+        return config
+      }),
+      callback
+    )
   }
 
   // the static method create new instance of ConfigMap with file name
   // includes envirnment variants (sync)
   static parseConfigSync (configFile, envs) {
-      // check for argument
+    // check for argument
     if (!configFile) throw new Error('undefined config file.')
 
     let
@@ -250,11 +247,11 @@ class ConfigMap extends Map
       newEnvs = [newEnvs]
     }
 
-      // parse path for config file
+    // parse path for config file
     const fpath = path.parse(configFile)
 
     newEnvs = newEnvs.map((env) => String.format(
-        '%s/%s.%s%s', fpath.dir, fpath.name, env, fpath.ext))
+      '%s/%s.%s%s', fpath.dir, fpath.name, env, fpath.ext))
 
     data = ConfigMap.readConfigSync(configFile, fpath.ext)
 
@@ -263,7 +260,7 @@ class ConfigMap extends Map
           (env) => ConfigMap.readConfigSync(env, fpath.ext)
         )
 
-      // merge env configuration files
+    // merge env configuration files
     for (const config of configs) {
       if (config === null) continue
 
@@ -356,8 +353,8 @@ class ConfigMap extends Map
 
       const findItemFunc = (aryItem, key) => {
         let result = aryItem.
-                      filter((item) => item instanceof Map).
-                      filter((item) => item.has(key))
+          filter((item) => item instanceof Map).
+          filter((item) => item.has(key))
 
         result = result.length > 0 ? result[0] : null
 
@@ -399,7 +396,7 @@ class ConfigMap extends Map
             // current key exists in mapping
             const mItem = mergedMap.get(cKey)
 
-              // check child keys
+            // check child keys
             if (mItem === cItem) continue
             else if (cItem instanceof Map) {
               mergedMap.set(
@@ -413,7 +410,7 @@ class ConfigMap extends Map
               mergedMap.set(cKey, cItem)
             }
           } else {
-              // append new key to map
+            // append new key to map
             mergedMap.set(cKey, cItem)
           }
         } catch (err) {

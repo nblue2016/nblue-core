@@ -143,16 +143,16 @@ describe('config', () => {
     const configFile = path.join(__dirname, 'config.yml')
 
     ConfigMap.
-        parseConfig(configFile, 'debug', (err, data) => {
-          if (err) return done(err)
+      parseConfig(configFile, 'debug', (err, data) => {
+        if (err) return done(err)
 
-          const source = data.get('databases').get('dbtest')
-          const target = 'connection string for test with debug mode'
+        const source = data.get('databases').get('dbtest')
+        const target = 'connection string for test with debug mode'
 
-          assert.equal(source, target, 'compare value')
+        assert.equal(source, target, 'compare value')
 
-          return done()
-        })
+        return done()
+      })
   })
 
   it('parse configuration file sync', () => {

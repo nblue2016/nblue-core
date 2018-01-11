@@ -86,8 +86,8 @@ describe('betch - value/array/object', () => {
     const target = {
       r1: { key1: 'val1' },
       r2: [
-          { key1: 'val1' },
-          { key2: 'val2' }
+        { key1: 'val1' },
+        { key2: 'val2' }
       ]
     }
 

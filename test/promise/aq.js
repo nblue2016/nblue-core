@@ -165,7 +165,7 @@ describe('aq - files', () => {
       catch((err) => done(err))
   })
 
-  it('sate invalid file method', (done) => {
+  it('stat invalid file method', (done) => {
     aq.
       statFile(`${testFile}2`).
       then(() => done(new Error('unknown'))).
@@ -234,8 +234,8 @@ describe('aq - promises', () => {
         q2.map((item) => ary.push(item * 2)))
       ).
       then(() => assert.deepEqual(
-          ary, [2, 4, 6, 8, 10], 'function without result.'
-        )).
+        ary, [2, 4, 6, 8, 10], 'function without result.'
+      )).
       then(() => aq.series(q2.map((item) => () => item * 2))).
       then((data) => assert.equal(data, 10, 'function without arg.')).
       then(() => aq.series(q2.map((item) => (ret) => item * ret), 1)).

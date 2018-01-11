@@ -12,8 +12,7 @@ const errors =
 const correctResponseCode = 200
 const inCorrectResponseCode = 400
 
-class FakedServer
-{
+class FakedServer {
 
   constructor (port) {
     this.server = this.createServer()
@@ -67,7 +66,7 @@ class FakedServer
         Object.
           keys(req.headers || {}).
           map((key) => [key.toLowerCase(), req.headers[key]])
-        )
+      )
 
     // create function for set response
     const fnSetResponse = context.setResponse

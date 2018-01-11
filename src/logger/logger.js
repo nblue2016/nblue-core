@@ -9,8 +9,7 @@ const DEFAULT_LOG_LEVEL = levelOfInfo
 const DEFAULT_APP_NAME = 'defaultAppName'
 const DEFAULT_LINE_FORMAT = '[${level}] ${now}: ${message}'
 
-class Logger
-{
+class Logger {
 
   constructor (outputter, options) {
     // get outputter from argument or use default one

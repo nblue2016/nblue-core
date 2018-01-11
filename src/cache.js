@@ -1,8 +1,7 @@
 /*
 Simple cache class as default
 */
-class Cache
-{
+class Cache {
 
   constructor () {
     this._cache = new Map()
